@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#17152e">
   <meta name="description" content="Save, organize and find Instagram and YouTube links by category.">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
@@ -22,10 +22,10 @@
 
   <main>
     <section class="hero">
-      <div>
+      <div class="hero-copy">
         <div class="eyebrow">PERSONAL CONTENT LIBRARY</div>
         <h1>Save it once.<br><span>Find it anytime.</span></h1>
-        <p>Keep Instagram & YouTube links neatly organized by category.</p>
+        <p>Keep Instagram, YouTube and web links neatly organized by category.</p>
       </div>
       <button class="primary hero-add" id="addBtn">＋ Save Link</button>
     </section>
@@ -36,28 +36,38 @@
       <button id="clearSearch" class="clear hidden">×</button>
     </div>
 
-    <section class="quick-row" id="quickRow"></section>
+    <section class="stats-row" aria-label="Library summary">
+      <div class="stat-card"><span class="stat-icon">🔖</span><div><b id="statTotal">0</b><small>Saved</small></div></div>
+      <div class="stat-card"><span class="stat-icon">▦</span><div><b id="statCats">0</b><small>Categories</small></div></div>
+      <div class="stat-card"><span class="stat-icon">♥</span><div><b id="statFavs">0</b><small>Favorites</small></div></div>
+    </section>
 
-    <div class="section-head">
-      <div>
-        <div class="section-title">Your Library</div>
-        <div class="section-count" id="libraryCount"></div>
+    <section class="category-section">
+      <div class="section-head">
+        <div><div class="section-kicker">ORGANIZE</div><div class="section-title">Your Categories</div><div class="section-count" id="categorySubtitle">Tap a category to browse</div></div>
+        <button class="text-btn" id="viewCategories">View all →</button>
       </div>
-      <select id="sortSelect" class="select">
-        <option value="newest">Newest first</option>
-        <option value="oldest">Oldest first</option>
-        <option value="az">A–Z</option>
-        <option value="favorite">Favorites first</option>
-      </select>
-    </div>
+      <div id="categoryGrid" class="category-grid"></div>
+    </section>
 
-    <section id="items" class="cards"></section>
-    <div id="empty" class="empty hidden">
-      <div class="empty-icon">🔖</div>
-      <h3 id="emptyTitle">Your nest is empty</h3>
-      <p id="emptyText">Save your first Instagram or YouTube link and organize it into a category.</p>
-      <button class="primary" id="emptyAdd">＋ Save your first link</button>
-    </div>
+    <section class="recent-section">
+      <div class="section-head">
+        <div><div class="section-kicker">LATEST</div><div class="section-title">Recently Saved</div><div class="section-count" id="libraryCount">0 saved items</div></div>
+        <select id="sortSelect" class="select">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="az">A–Z</option>
+          <option value="favorite">Favorites first</option>
+        </select>
+      </div>
+      <section id="items" class="cards"></section>
+      <div id="empty" class="empty hidden">
+        <div class="empty-illustration"><span>🔖</span><i>＋</i></div>
+        <h3 id="emptyTitle">Your SaveNest is waiting</h3>
+        <p id="emptyText">Save your first Instagram or YouTube video and organize it into a category.</p>
+        <button class="primary" id="emptyAdd">＋ Save Your First Link</button>
+      </div>
+    </section>
   </main>
 
   <nav class="bottom-nav">
@@ -115,7 +125,7 @@
       <button class="setting danger" id="clearAll"><b>⌫ Delete all saved items</b><small>This cannot be undone.</small></button>
     </div>
     <input type="file" id="importFile" accept="application/json" hidden>
-    <div class="about">SaveNest V1 • Works offline after installation • No account required</div>
+    <div class="about">SaveNest V2 • Works offline after installation • No account required</div>
   </div>
 </div>
 
