@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="Save, organize and find Instagram and YouTube links by category.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>SaveNest</title>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">SN</div>
+      <div><div class="brand-name">SaveNest</div><div class="brand-sub">Your saved content, organized.</div></div>
+    </div>
+    <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙️</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="eyebrow">PERSONAL CONTENT LIBRARY</div>
+        <h1>Save it once.<br><span>Find it anytime.</span></h1>
+        <p>Keep Instagram & YouTube links neatly organized by category.</p>
+      </div>
+      <button class="primary hero-add" id="addBtn">＋ Save Link</button>
+    </section>
+
+    <div class="search-wrap">
+      <span>⌕</span>
+      <input id="search" placeholder="Search videos, notes, categories..." autocomplete="off">
+      <button id="clearSearch" class="clear hidden">×</button>
+    </div>
+
+    <section class="quick-row" id="quickRow"></section>
+
+    <div class="section-head">
+      <div>
+        <div class="section-title">Your Library</div>
+        <div class="section-count" id="libraryCount"></div>
+      </div>
+      <select id="sortSelect" class="select">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="az">A–Z</option>
+        <option value="favorite">Favorites first</option>
+      </select>
+    </div>
+
+    <section id="items" class="cards"></section>
+    <div id="empty" class="empty hidden">
+      <div class="empty-icon">🔖</div>
+      <h3 id="emptyTitle">Your nest is empty</h3>
+      <p id="emptyText">Save your first Instagram or YouTube link and organize it into a category.</p>
+      <button class="primary" id="emptyAdd">＋ Save your first link</button>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav active" data-view="all"><span>⌂</span><small>Library</small></button>
+    <button class="nav" data-view="favorites"><span>♡</span><small>Favorites</small></button>
+    <button class="nav add-nav" id="navAdd"><span>＋</span></button>
+    <button class="nav" data-view="categories"><span>▦</span><small>Categories</small></button>
+    <button class="nav" data-view="settings"><span>⚙</span><small>More</small></button>
+  </nav>
+</div>
+
+<!-- Add/Edit modal -->
+<div class="modal hidden" id="itemModal">
+  <div class="sheet">
+    <div class="sheet-head"><div><div class="sheet-title" id="modalTitle">Save a link</div><div class="sheet-sub">Keep the original link — add your own organization.</div></div><button class="close" data-close>×</button></div>
+    <form id="itemForm">
+      <label>Video / page link
+        <input id="url" type="url" placeholder="https://www.instagram.com/... or https://youtube.com/..." required>
+      </label>
+      <div class="two">
+        <label>Title <span class="optional">(optional)</span>
+          <input id="title" placeholder="e.g. NEBOSH Fire Safety Basics">
+        </label>
+        <label>Category
+          <select id="category"></select>
+        </label>
+      </div>
+      <label>Notes <span class="optional">(optional)</span>
+        <textarea id="notes" rows="3" placeholder="Why did you save this? What should you remember?"></textarea>
+      </label>
+      <div class="platform-hint" id="platformHint">Paste a link to detect the platform.</div>
+      <input type="hidden" id="editId">
+      <button class="primary full" type="submit">Save to SaveNest</button>
+    </form>
+  </div>
+</div>
+
+<!-- Category modal -->
+<div class="modal hidden" id="catModal">
+  <div class="sheet">
+    <div class="sheet-head"><div><div class="sheet-title">Manage categories</div><div class="sheet-sub">Create categories that match your life.</div></div><button class="close" data-close>×</button></div>
+    <div id="catList" class="cat-list"></div>
+    <form id="catForm" class="cat-add"><input id="newCat" placeholder="New category name" maxlength="30"><button class="primary" type="submit">Add</button></form>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div class="modal hidden" id="settingsModal">
+  <div class="sheet">
+    <div class="sheet-head"><div><div class="sheet-title">SaveNest</div><div class="sheet-sub">Private by default — data stays on this device.</div></div><button class="close" data-close>×</button></div>
+    <div class="setting-grid">
+      <button class="setting" id="exportBtn"><b>⬆ Backup library</b><small>Export all saved links as a JSON file.</small></button>
+      <button class="setting" id="importBtn"><b>⬇ Restore library</b><small>Import a previous SaveNest backup.</small></button>
+      <button class="setting" id="manageCats"><b>▦ Manage categories</b><small>Add or remove your categories.</small></button>
+      <button class="setting danger" id="clearAll"><b>⌫ Delete all saved items</b><small>This cannot be undone.</small></button>
+    </div>
+    <input type="file" id="importFile" accept="application/json" hidden>
+    <div class="about">SaveNest V1 • Works offline after installation • No account required</div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
