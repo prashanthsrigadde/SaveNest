@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#17152e">
-  <meta name="description" content="Save, organize and find Instagram and YouTube links by category.">
+  <meta name="description" content="Save, organize and revisit Instagram, YouTube and web content with smart titles, reminders and categories.">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="styles.css">
@@ -87,18 +87,32 @@
       <label>Video / page link
         <input id="url" type="url" placeholder="https://www.instagram.com/... or https://youtube.com/..." required>
       </label>
+      <div class="smart-banner">✨ <b>Smart Save</b><span>SaveNest will prepare a useful title and a personal reminder automatically. You can still edit them anytime.</span></div>
+      <label>Source title / caption <span class="optional">(optional)</span>
+        <input id="sharedTitle" placeholder="Taken automatically when available from the shared link">
+      </label>
+      <label>Extra content / caption <span class="optional">(optional)</span>
+        <textarea id="sourceText" rows="2" placeholder="If your share includes a caption or description, paste it here for a better smart result."></textarea>
+      </label>
       <div class="two">
-        <label>Title <span class="optional">(optional)</span>
-          <input id="title" placeholder="e.g. NEBOSH Fire Safety Basics">
+        <label>Smart Title
+          <input id="title" placeholder="SaveNest will create this automatically">
         </label>
         <label>Category
           <select id="category"></select>
         </label>
       </div>
-      <label>Notes <span class="optional">(optional)</span>
-        <textarea id="notes" rows="3" placeholder="Why did you save this? What should you remember?"></textarea>
+      <div class="two">
+        <label>Subcategory
+          <select id="subcategory"></select>
+        </label>
+        <div class="smart-action-wrap"><button type="button" class="secondary-btn" id="regenerateSmart">✨ Regenerate smart details</button></div>
+      </div>
+      <label>Smart Reminder
+        <textarea id="notes" rows="4" placeholder="SaveNest will create a useful reminder automatically."></textarea>
       </label>
       <div class="platform-hint" id="platformHint">Paste a link to detect the platform.</div>
+      <div class="smart-status" id="smartStatus">Paste a link — SaveNest will prepare a smart title and reminder.</div>
       <input type="hidden" id="editId">
       <button class="primary full" type="submit">Save to SaveNest</button>
     </form>
@@ -125,7 +139,7 @@
       <button class="setting danger" id="clearAll"><b>⌫ Delete all saved items</b><small>This cannot be undone.</small></button>
     </div>
     <input type="file" id="importFile" accept="application/json" hidden>
-    <div class="about">SaveNest V2 • Works offline after installation • No account required</div>
+    <div class="about">SaveNest V3 • Smart titles & reminders • Category → Subcategory → Videos • No account required</div>
   </div>
 </div>
 

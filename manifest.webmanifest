@@ -1,18 +1,32 @@
 {
-  "name": "SaveNest — Saved Content Library",
+  "name": "SaveNest \u2014 Your Personal Content Library",
   "short_name": "SaveNest",
   "start_url": "./?source=pwa",
   "display": "standalone",
   "background_color": "#f5f6fb",
   "theme_color": "#17152e",
-  "description": "Organize Instagram, YouTube and web links into categories.",
+  "description": "Save, organize and quickly find Instagram, YouTube and web content by category.",
   "share_target": {
     "action": "./",
     "method": "GET",
-    "params": {"title":"title","text":"text","url":"url"}
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
   },
   "icons": [
-    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
