@@ -118,8 +118,19 @@
 <div class="modal hidden" id="catModal">
   <div class="sheet">
     <div class="sheet-head"><div><div class="sheet-title">Manage categories</div><div class="sheet-sub">Create, rename or remove categories to match your life.</div></div><button class="close" data-close>×</button></div>
+    <div class="manage-note">Reorder your categories, rename them, or open <b>Topics</b> to manage their subcategories.</div>
     <div id="catList" class="cat-list"></div>
-    <form id="catForm" class="cat-add"><input id="newCat" placeholder="New category name" maxlength="30"><button class="primary" type="submit">Add</button></form>
+    <form id="catForm" class="cat-add"><input id="newCat" placeholder="New category name" maxlength="30"><button class="primary" type="submit">Add category</button></form>
+  </div>
+</div>
+
+<!-- Subcategory manager -->
+<div class="modal hidden" id="subModal">
+  <div class="sheet">
+    <div class="sheet-head"><div><div class="sheet-title" id="subModalTitle">Manage topics</div><div class="sheet-sub">Create, rename, delete and reorder subcategories.</div></div><button class="close" data-close>×</button></div>
+    <div class="manage-note">Saved videos stay attached to their topic when you rename or reorder it.</div>
+    <div id="subList" class="cat-list"></div>
+    <form id="subForm" class="cat-add"><input id="newSub" placeholder="New subcategory name" maxlength="35"><button class="primary" type="submit">Add topic</button></form>
   </div>
 </div>
 
@@ -134,7 +145,7 @@
       <button class="setting danger" id="clearAll"><b>⌫ Delete all saved items</b><small>This cannot be undone.</small></button>
     </div>
     <input type="file" id="importFile" accept="application/json" hidden>
-    <div class="about">SaveNest V5 • Smart titles & reminders • Category → Subcategory → Videos • No account required</div>
+    <div class="about">SaveNest V7 • Smart titles & reminders • Category → Subcategory → Videos • No account required</div>
   </div>
 </div>
 

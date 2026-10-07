@@ -223,7 +223,7 @@ function renderCategories(){
   $("#categorySubtitle").textContent=currentCat?`Browsing ${currentCat}${currentSub?" · "+currentSub:""}`:"Choose a category to explore your saved content";
 }
 function openCategory(c){currentCat=c;currentSub="";currentView="subcategories";setNav("categories");renderAll()}
-function filtered(){let q=$("#search").value.trim().toLowerCase();let a=items.filter(i=>currentView==="favorites"?i.favorite:true).filter(i=>!currentCat||i.category===currentCat).filter(i=>!currentSub||i.subcategory===currentSub);if(q)a=a.filter(i=>[i.title,i.url,i.notes,i.category,i.subcategory,i.platform].join(" ").toLowerCase().includes(q));const sort=$("#sortSelect").value;if(sort==="newest")a.sort((x,y)=>y.created-x.created);if(sort==="oldest")a.sort((x,y)=>x.created-y.created);if(sort==="az")a.sort((x,y)=>(x.title||"").localeCompare(y.title||""));if(sort==="favorite")a.sort((x,y)=>Number(y.favorite)-Number(x.favorite)||y.created-x.created);return a}
+function filtered(){let q=$("#search").value.trim().toLowerCase();let catKey=(currentCat||"").trim().toLowerCase(),subKey=(currentSub||"").trim().toLowerCase();let a=items.filter(i=>currentView==="favorites"?i.favorite:true).filter(i=>!catKey||String(i.category||"").trim().toLowerCase()===catKey).filter(i=>!subKey||String(i.subcategory||"").trim().toLowerCase()===subKey);if(q)a=a.filter(i=>[i.title,i.url,i.notes,i.category,i.subcategory,i.platform].join(" ").toLowerCase().includes(q));const sort=$("#sortSelect").value;if(sort==="newest")a.sort((x,y)=>y.created-x.created);if(sort==="oldest")a.sort((x,y)=>x.created-y.created);if(sort==="az")a.sort((x,y)=>(x.title||"").localeCompare(y.title||""));if(sort==="favorite")a.sort((x,y)=>Number(y.favorite)-Number(x.favorite)||y.created-x.created);return a}
 function card(i){return `<article class="card"><div class="card-top"><span class="platform ${i.platform.toLowerCase()}">${i.platform==="Instagram"?"◎":i.platform==="YouTube"?"▶":"↗"} ${i.platform}</span><button class="fav ${i.favorite?"is-fav":""}" title="Favorite" data-fav="${i.id}">${i.favorite?"♥":"♡"}</button></div><h3>${esc(i.title||"Saved link")}</h3><div class="url">${esc(domain(i.url))} · ${fmt(i.created)}</div>${i.notes?`<div class="note">${esc(i.notes)}</div>`:""}<div class="meta"><span class="category-pill">${iconForCategory(i.category)} ${esc(i.category)}${i.subcategory?` · ${esc(i.subcategory)}`:""}</span><div class="actions"><button class="small-btn" data-open="${i.id}">Open</button><button class="small-btn" data-edit="${i.id}">Edit</button><button class="small-btn delete-btn" data-delete="${i.id}">Delete</button></div></div></article>`}
 function render(){
   renderStats();
@@ -259,8 +259,10 @@ function categoriesView(){
     $$("#categoryGrid [data-subcategory]").forEach(b=>b.onclick=()=>{
       currentView="all";
       currentSub=(b.dataset.subcategory||"").trim();
-      setNav("categories");
+      currentCat=currentCat.trim();
+      // Always render the exact category + topic filter; never fall back to Recent.
       renderAll();
+      window.scrollTo({top:0,behavior:"smooth"});
     });
     $("#backCats").onclick=()=>{currentView="categories";currentCat="";currentSub="";renderAll()};
     $("#categorySubtitle").textContent=`${currentCat} · choose a topic`;
@@ -308,26 +310,60 @@ async function submitItem(e){
   save();closeModals();renderAll();toast(editing?"Saved changes":"Automatically organized and saved");editing=null;categoryManuallySet=false;subcategoryManuallySet=false;
 }
 function renderCats(){
-  $("#catList").innerHTML=cats.map(c=>`<div class="cat-item"><span class="cat-label">${iconForCategory(c)} ${esc(c)}</span><div class="cat-actions"><button data-editcat="${esc(c)}" title="Edit category">✎</button><button data-delcat="${esc(c)}" title="Delete category">×</button></div></div>`).join("");
-  $$("#catList [data-editcat]").forEach(b=>b.onclick=()=>{
-    const old=b.dataset.editcat;const next=prompt("Rename category",old)?.trim();
-    if(!next||next===old)return;
-    if(cats.some(c=>c.toLowerCase()===next.toLowerCase()))return toast("Category already exists");
-    const idx=cats.indexOf(old);cats[idx]=next;subcats[next]=subcats[old]||["General","Other"];delete subcats[old];
-    items.forEach(i=>{if(i.category===old)i.category=next});
-    if(currentCat===old)currentCat=next;save();renderCats();renderAll();toast("Category updated");
-  });
-  $$("#catList [data-delcat]").forEach(b=>b.onclick=()=>{
-    const c=b.dataset.delcat;if(cats.length<=1)return toast("Keep at least one category");
-    const used=items.some(i=>i.category===c);
-    if(used&&!confirm(`“${c}” contains saved items. Move them to another category before deleting?`))return;
-    const target=cats.find(x=>x!==c);
-    if(used){items.forEach(i=>{if(i.category===c){i.category=target;i.subcategory=(subcats[target]||["Other"])[0]}})}
-    cats=cats.filter(x=>x!==c);delete subcats[c];
-    if(currentCat===c){currentCat="";currentSub="";currentView="categories"}
-    save();renderCats();renderAll();toast("Category deleted");
-  });
+  const usedCats=new Set(items.map(i=>i.category));
+  $('#catList').innerHTML=cats.map((c,idx)=>`<div class="cat-item category-manage-item">
+    <div class="cat-label"><span class="manage-icon">${iconForCategory(c)}</span><span><b>${esc(c)}</b><small>${items.filter(i=>i.category===c).length} saved · ${(subcats[c]||[]).length} topics</small></span></div>
+    <div class="cat-actions">
+      <button data-upcat="${esc(c)}" ${idx===0?'disabled':''} title="Move up">↑</button>
+      <button data-downcat="${esc(c)}" ${idx===cats.length-1?'disabled':''} title="Move down">↓</button>
+      <button data-subcat="${esc(c)}" title="Manage subcategories">Topics</button>
+      <button data-editcat="${esc(c)}" title="Rename category">✎</button>
+      <button data-delcat="${esc(c)}" title="Delete category">×</button>
+    </div>
+  </div>`).join('');
+  $$('#catList [data-upcat]').forEach(b=>b.onclick=()=>moveCategory(b.dataset.upcat,-1));
+  $$('#catList [data-downcat]').forEach(b=>b.onclick=()=>moveCategory(b.dataset.downcat,1));
+  $$('#catList [data-subcat]').forEach(b=>b.onclick=()=>openSubManager(b.dataset.subcat));
+  $$('#catList [data-editcat]').forEach(b=>b.onclick=()=>renameCategory(b.dataset.editcat));
+  $$('#catList [data-delcat]').forEach(b=>b.onclick=()=>deleteCategory(b.dataset.delcat));
 }
+function moveCategory(name,dir){const i=cats.indexOf(name),j=i+dir;if(i<0||j<0||j>=cats.length)return;[cats[i],cats[j]]=[cats[j],cats[i]];save();renderCats();renderAll();toast(dir<0?'Category moved up':'Category moved down')}
+function renameCategory(old){
+  const next=prompt('Rename category',old)?.trim(); if(!next||next===old)return;
+  if(cats.some(c=>c.toLowerCase()===next.toLowerCase()))return toast('Category already exists');
+  const idx=cats.indexOf(old);cats[idx]=next;subcats[next]=subcats[old]||['General','Other'];delete subcats[old];
+  items.forEach(i=>{if(i.category===old)i.category=next});
+  if(currentCat===old)currentCat=next;save();renderCats();renderAll();toast('Category renamed');
+}
+function deleteCategory(c){
+  if(cats.length<=1)return toast('Keep at least one category');
+  const target=cats.find(x=>x!==c);const used=items.some(i=>i.category===c);
+  if(used&&!confirm(`“${c}” contains saved items. Move them to “${target}” before deleting?`))return;
+  if(used){const targetSubs=subcats[target]||['General','Other'];items.forEach(i=>{if(i.category===c){i.category=target;i.subcategory=targetSubs.includes(i.subcategory)?i.subcategory:targetSubs[0]}})}
+  cats=cats.filter(x=>x!==c);delete subcats[c];
+  if(currentCat===c){currentCat='';currentSub='';currentView='categories'}
+  save();renderCats();renderAll();toast('Category deleted');
+}
+function openSubManager(category){
+  currentCat=category; $('#subModalTitle').textContent=`Manage topics · ${category}`; renderSubcats(); closeModalOnly('#catModal'); openModal('#subModal');
+}
+function renderSubcats(){
+  const category=currentCat, arr=subcats[category]||['General','Other'];
+  $('#subList').innerHTML=arr.map((sub,idx)=>`<div class="cat-item category-manage-item">
+    <div class="cat-label"><span class="manage-icon">${iconForCategory(category)}</span><span><b>${esc(sub)}</b><small>${items.filter(i=>i.category===category&&i.subcategory===sub).length} saved</small></span></div>
+    <div class="cat-actions">
+      <button data-upsub="${esc(sub)}" ${idx===0?'disabled':''}>↑</button><button data-downsub="${esc(sub)}" ${idx===arr.length-1?'disabled':''}>↓</button>
+      <button data-editsub="${esc(sub)}">✎</button><button data-delsub="${esc(sub)}">×</button>
+    </div></div>`).join('');
+  $$('#subList [data-upsub]').forEach(b=>b.onclick=()=>moveSubcategory(category,b.dataset.upsub,-1));
+  $$('#subList [data-downsub]').forEach(b=>b.onclick=()=>moveSubcategory(category,b.dataset.downsub,1));
+  $$('#subList [data-editsub]').forEach(b=>b.onclick=()=>renameSubcategory(category,b.dataset.editsub));
+  $$('#subList [data-delsub]').forEach(b=>b.onclick=()=>deleteSubcategory(category,b.dataset.delsub));
+}
+function moveSubcategory(category,name,dir){const arr=subcats[category]||[];const i=arr.indexOf(name),j=i+dir;if(i<0||j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];subcats[category]=arr;save();renderSubcats();renderAll();toast(dir<0?'Topic moved up':'Topic moved down')}
+function renameSubcategory(category,old){const next=prompt('Rename subcategory',old)?.trim();if(!next||next===old)return;const arr=subcats[category]||[];if(arr.some(x=>x.toLowerCase()===next.toLowerCase()))return toast('Topic already exists');const i=arr.indexOf(old);arr[i]=next;items.forEach(x=>{if(x.category===category&&x.subcategory===old)x.subcategory=next});subcats[category]=arr;if(currentSub===old)currentSub=next;save();renderSubcats();renderAll();toast('Topic renamed')}
+function deleteSubcategory(category,sub){const arr=subcats[category]||[];if(arr.length<=1)return toast('Keep at least one topic');const target=arr.find(x=>x!==sub);const used=items.some(i=>i.category===category&&i.subcategory===sub);if(used&&!confirm(`“${sub}” contains saved videos. Move them to “${target}”?`))return;if(used)items.forEach(i=>{if(i.category===category&&i.subcategory===sub)i.subcategory=target});subcats[category]=arr.filter(x=>x!==sub);if(currentSub===sub)currentSub='';save();renderSubcats();renderAll();toast('Topic deleted')}
+function closeModalOnly(id){$(id)?.classList.add('hidden')}
 function exportData(){const blob=new Blob([JSON.stringify({app:"SaveNest",version:3,categories:cats,subcategories:subcats,items},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="savenest-backup-v3.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Backup exported")}
 function importData(file){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.items)||!Array.isArray(d.categories))throw Error();items=d.items;cats=d.categories;subcats=d.subcategories||{};for(const c of cats)subcats[c]=subcats[c]||defaultSubs[c]||["General","Other"];save();renderAll();toast("Backup restored")}catch{toast("That backup file is not valid SaveNest data")}};r.readAsText(file)}
 function normalizeLibrary(){
@@ -352,6 +388,7 @@ $("#regenerateSmart").onclick=()=>autoFillSmart({force:true});
 $("#search").oninput=render;$("#clearSearch").onclick=()=>{$("#search").value="";render()};$("#sortSelect").onchange=render;
 $$("[data-close]").forEach(b=>b.onclick=closeModals);$$('.modal').forEach(m=>m.addEventListener("click",e=>{if(e.target===m)closeModals()}));
 $("#settingsBtn").onclick=()=>openModal("#settingsModal");$("#manageCats").onclick=()=>{closeModals();renderCats();openModal("#catModal")};
+$("#subForm").onsubmit=e=>{e.preventDefault();const n=$("#newSub").value.trim();if(!n)return;const arr=subcats[currentCat]||[];if(arr.some(x=>x.toLowerCase()===n.toLowerCase()))return toast("Topic already exists");arr.push(n);subcats[currentCat]=arr;$("#newSub").value="";save();renderSubcats();renderAll();toast("Topic added")};
 $("#catForm").onsubmit=e=>{e.preventDefault();const n=$("#newCat").value.trim();if(!n)return;if(cats.some(c=>c.toLowerCase()===n.toLowerCase()))return toast("Category already exists");cats.push(n);subcats[n]=["General","Other"];$("#newCat").value="";save();renderCats();renderAll();toast("Category added")};
 $("#exportBtn").onclick=exportData;$("#importBtn").onclick=()=>$("#importFile").click();$("#importFile").onchange=e=>e.target.files[0]&&importData(e.target.files[0]);
 $("#clearAll").onclick=()=>{if(confirm("Delete ALL saved links? This cannot be undone.")){items=[];save();renderAll();closeModals();toast("Library cleared")}};
