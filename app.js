@@ -187,13 +187,73 @@ async function autoFillSmart({force=false}={}){
   $("#smartStatus").textContent=`✨ Auto-organized: ${finalCat} → ${finalSub}`;
 }
 function renderStats(){$("#statTotal").textContent=items.length;$("#statCats").textContent=cats.length;$("#statFavs").textContent=items.filter(i=>i.favorite).length}
-function renderCategories(){const counts={};items.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);const visible=cats.slice(0,6);$("#categoryGrid").innerHTML=visible.map(c=>{const n=counts[c]||0;return `<button class="category-card" data-category="${esc(c)}"><span class="category-icon">${iconForCategory(c)}</span><span class="category-name">${esc(c)}</span><span class="category-count">${n} saved</span><span class="category-arrow">→</span></button>`}).join("");if(cats.length>6)$("#categoryGrid").insertAdjacentHTML("beforeend",`<button class="category-card more-card" id="moreCategories"><span class="category-icon">＋</span><span class="category-name">View all</span><span class="category-count">${cats.length} categories</span><span class="category-arrow">→</span></button>`);$$("[data-category]").forEach(b=>b.onclick=()=>openCategory(b.dataset.category));$("#moreCategories")?.addEventListener("click",()=>{currentView="categories";currentCat="";currentSub="";setNav("categories");renderAll()});$("#categorySubtitle").textContent=currentCat?`Showing ${currentCat}${currentSub?" / "+currentSub:""}`:"Tap a category to browse"}
+function renderCategories(){
+  const counts={};items.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
+  const section=document.querySelector('.category-section');
+  if(currentCat || currentView==="categories" || currentView==="subcategories") section?.classList.remove('hidden');
+  if(currentCat){
+    // Context pages are rendered by categoriesView or the item view; don't show the home category grid.
+    if(currentView!=="categories" && currentView!=="subcategories") { section?.classList.add('hidden'); return; }
+  }
+  const visible=cats.slice(0,6);
+  $("#categoryGrid").innerHTML=visible.map(c=>{
+    const n=counts[c]||0;
+    return `<button class="category-card" data-category="${esc(c)}"><span class="category-icon">${iconForCategory(c)}</span><span class="category-name">${esc(c)}</span><span class="category-count">${n} saved · ${(subcats[c]||[]).length} topics</span><span class="category-arrow">→</span></button>`
+  }).join("");
+  if(cats.length>6)$("#categoryGrid").insertAdjacentHTML("beforeend",`<button class="category-card more-card" id="moreCategories"><span class="category-icon">＋</span><span class="category-name">View all</span><span class="category-count">${cats.length} categories</span><span class="category-arrow">→</span></button>`);
+  $$('[data-category]').forEach(b=>b.onclick=()=>openCategory(b.dataset.category));
+  $("#moreCategories")?.addEventListener("click",()=>{currentView="categories";currentCat="";currentSub="";setNav("categories");renderAll()});
+  $("#categorySubtitle").textContent=currentCat?`Browsing ${currentCat}${currentSub?" · "+currentSub:""}`:"Choose a category to explore your saved content";
+}
 function openCategory(c){currentCat=c;currentSub="";currentView="subcategories";setNav("categories");renderAll()}
 function filtered(){let q=$("#search").value.trim().toLowerCase();let a=items.filter(i=>currentView==="favorites"?i.favorite:true).filter(i=>!currentCat||i.category===currentCat).filter(i=>!currentSub||i.subcategory===currentSub);if(q)a=a.filter(i=>[i.title,i.url,i.notes,i.category,i.subcategory,i.platform].join(" ").toLowerCase().includes(q));const sort=$("#sortSelect").value;if(sort==="newest")a.sort((x,y)=>y.created-x.created);if(sort==="oldest")a.sort((x,y)=>x.created-y.created);if(sort==="az")a.sort((x,y)=>(x.title||"").localeCompare(y.title||""));if(sort==="favorite")a.sort((x,y)=>Number(y.favorite)-Number(x.favorite)||y.created-x.created);return a}
 function card(i){return `<article class="card"><div class="card-top"><span class="platform ${i.platform.toLowerCase()}">${i.platform==="Instagram"?"◎":i.platform==="YouTube"?"▶":"↗"} ${i.platform}</span><button class="fav ${i.favorite?"is-fav":""}" title="Favorite" data-fav="${i.id}">${i.favorite?"♥":"♡"}</button></div><h3>${esc(i.title||"Saved link")}</h3><div class="url">${esc(domain(i.url))} · ${fmt(i.created)}</div>${i.notes?`<div class="note">${esc(i.notes)}</div>`:""}<div class="meta"><span class="category-pill">${iconForCategory(i.category)} ${esc(i.category)}${i.subcategory?` · ${esc(i.subcategory)}`:""}</span><div class="actions"><button class="small-btn" data-open="${i.id}">Open</button><button class="small-btn" data-edit="${i.id}">Edit</button><button class="small-btn delete-btn" data-delete="${i.id}">Delete</button></div></div></article>`}
-function render(){renderStats();renderCategories();if(currentView==="categories"||currentView==="subcategories"){categoriesView();return}const a=filtered();$("#libraryCount").textContent=`${a.length} saved ${a.length===1?"item":"items"}${currentCat?` in ${currentCat}${currentSub?` / ${currentSub}`:""}`:""}`;$("#items").innerHTML=a.slice(0,currentView==="all"&&!currentCat&&!$("#search").value?6:a.length).map(card).join("");$("#empty").classList.toggle("hidden",a.length!==0);if(!a.length){$("#emptyTitle").textContent=items.length?"Nothing found here":"Your SaveNest is waiting";$("#emptyText").textContent=items.length?"Try another category, subcategory or search word.":"Save your first Instagram or YouTube video and organize it into a category."}$$("#items [data-fav]").forEach(b=>b.onclick=()=>{const i=items.find(x=>x.id===b.dataset.fav);if(!i)return;i.favorite=!i.favorite;save();render()});$$("#items [data-open]").forEach(b=>b.onclick=()=>{const i=items.find(x=>x.id===b.dataset.open);if(i)window.open(i.url,"_blank","noopener,noreferrer")});$$("#items [data-edit]").forEach(b=>b.onclick=()=>editItem(b.dataset.edit));$$("#items [data-delete]").forEach(b=>b.onclick=()=>deleteItem(b.dataset.delete));$("#clearSearch").classList.toggle("hidden",!$("#search").value)}
-function categoriesView(){const counts={};items.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);if(currentView==="subcategories"){const subs=subcats[currentCat]||["Other"];const subCounts={};items.filter(i=>i.category===currentCat).forEach(i=>subCounts[i.subcategory||"Other"]=(subCounts[i.subcategory||"Other"]||0)+1);$("#categoryGrid").innerHTML=`<button class="category-back" id="backCats">← All Categories</button>`+subs.map(s=>`<button class="category-card large" data-subcategory="${esc(s)}"><span class="category-icon">${iconForCategory(currentCat)}</span><span class="category-name">${esc(s)}</span><span class="category-count">${subCounts[s]||0} saved</span><span class="category-arrow">→</span></button>`).join("");$$("#categoryGrid [data-subcategory]").forEach(b=>b.onclick=()=>{currentView="all";currentSub=b.dataset.subcategory;setNav("categories");render()});$("#backCats").onclick=()=>{currentView="categories";currentCat="";currentSub="";renderAll()};$("#categorySubtitle").textContent=`${currentCat} · choose a subcategory`;$("#items").innerHTML="";$("#empty").classList.add("hidden");$("#libraryCount").textContent=`${subs.length} subcategories`;return}
-  $("#categoryGrid").innerHTML=cats.map(c=>`<button class="category-card large" data-category="${esc(c)}"><span class="category-icon">${iconForCategory(c)}</span><span class="category-name">${esc(c)}</span><span class="category-count">${counts[c]||0} saved · ${(subcats[c]||[]).length} subcategories</span><span class="category-arrow">→</span></button>`).join("");$$("#categoryGrid [data-category]").forEach(b=>b.onclick=()=>openCategory(b.dataset.category));$("#categorySubtitle").textContent="Choose a category to browse your library";$("#items").innerHTML="";$("#empty").classList.add("hidden");$("#libraryCount").textContent=`${cats.length} categories`}
+function render(){
+  renderStats();
+  const section=document.querySelector('.category-section');
+  if(currentView==="categories"||currentView==="subcategories"){
+    section?.classList.remove('hidden');
+    categoriesView();
+    return;
+  }
+  if(currentCat){section?.classList.add('hidden');}
+  else section?.classList.remove('hidden');
+  renderCategories();
+  const a=filtered();
+  const inContext=Boolean(currentCat||currentSub);
+  $("#libraryCount").textContent=`${a.length} saved ${a.length===1?"item":"items"}`;
+  $("#recentKicker").textContent=inContext?"SAVED CONTENT":"LATEST";
+  $("#recentTitle").textContent=currentSub||currentCat||"Recently Saved";
+  $("#recentSubtitle").textContent=inContext?`${currentCat}${currentSub?` · ${currentSub}`:""} · every saved video in this topic`:`${a.length} saved items`;
+  $("#viewCategories").textContent=inContext?"‹ Back to topics":"View all →";
+  $("#items").innerHTML=a.slice(0,currentView==="all"&&!currentCat&&!$("#search").value?6:a.length).map(card).join("");$("#empty").classList.toggle("hidden",a.length!==0);if(!a.length){$("#emptyTitle").textContent=items.length?"Nothing found here":"Your SaveNest is waiting";$("#emptyText").textContent=items.length?"Try another category, subcategory or search word.":"Save your first Instagram or YouTube video and organize it into a category."}$$("#items [data-fav]").forEach(b=>b.onclick=()=>{const i=items.find(x=>x.id===b.dataset.fav);if(!i)return;i.favorite=!i.favorite;save();render()});$$("#items [data-open]").forEach(b=>b.onclick=()=>{const i=items.find(x=>x.id===b.dataset.open);if(i)window.open(i.url,"_blank","noopener,noreferrer")});$$("#items [data-edit]").forEach(b=>b.onclick=()=>editItem(b.dataset.edit));$$("#items [data-delete]").forEach(b=>b.onclick=()=>deleteItem(b.dataset.delete));$("#clearSearch").classList.toggle("hidden",!$("#search").value)}
+function categoriesView(){
+  const counts={};items.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
+  if(currentView==="subcategories"){
+    const subs=subcats[currentCat]||["Other"];
+    const subCounts={};items.filter(i=>i.category===currentCat).forEach(i=>subCounts[i.subcategory||"Other"]=(subCounts[i.subcategory||"Other"]||0)+1);
+    $("#categoryGrid").innerHTML=`<button class="category-back" id="backCats">‹ All Categories</button>`+
+      subs.map(s=>`<button class="category-card large" data-subcategory="${esc(s)}"><span class="category-icon">${iconForCategory(currentCat)}</span><span class="category-name">${esc(s)}</span><span class="category-count">${subCounts[s]||0} saved</span><span class="category-arrow">→</span></button>`).join("");
+    $$("#categoryGrid [data-subcategory]").forEach(b=>b.onclick=()=>{currentView="all";currentSub=b.dataset.subcategory;setNav("categories");renderAll()});
+    $("#backCats").onclick=()=>{currentView="categories";currentCat="";currentSub="";renderAll()};
+    $("#categorySubtitle").textContent=`${currentCat} · choose a topic`;
+    $("#libraryCount").textContent=`${subs.length} topics · ${items.filter(i=>i.category===currentCat).length} saved`;
+    $("#items").innerHTML="";$("#empty").classList.add("hidden");
+    $("#recentTitle").textContent=currentCat;
+    $("#recentKicker").textContent="TOPICS";
+    $("#recentSubtitle").textContent="Open a topic to view every saved video inside it";
+    $("#viewCategories").textContent="All categories →";
+    return;
+  }
+  $("#categoryGrid").innerHTML=cats.map(c=>`<button class="category-card large" data-category="${esc(c)}"><span class="category-icon">${iconForCategory(c)}</span><span class="category-name">${esc(c)}</span><span class="category-count">${counts[c]||0} saved · ${(subcats[c]||[]).length} topics</span><span class="category-arrow">→</span></button>`).join("");
+  $$("#categoryGrid [data-category]").forEach(b=>b.onclick=()=>openCategory(b.dataset.category));
+  $("#categorySubtitle").textContent="Choose a category to browse by topic";
+  $("#items").innerHTML="";$("#empty").classList.add("hidden");$("#libraryCount").textContent=`${cats.length} categories`;
+  $("#recentTitle").textContent="Your categories";
+  $("#recentKicker").textContent="ORGANIZE";
+  $("#recentSubtitle").textContent="Each category opens into its own topics";
+  $("#viewCategories").textContent="Home →";
+}
 function renderAll(){render()}
 function fillCats(selected=""){const smart=smartCategory($("#sharedTitle")?.value||"",$("#sourceText")?.value||"");$("#category").innerHTML=cats.map(c=>`<option value="${esc(c)}" ${c===selected?"selected":""}>${iconForCategory(c)} ${esc(c)}</option>`).join("");if(!selected&&cats.includes(smart))$("#category").value=smart;fillSubcats($("#category").value)}
 function fillSubcats(category,selected=""){const arr=subcats[category]||["Other"];$("#subcategory").innerHTML=arr.map(s=>`<option value="${esc(s)}" ${s===selected?"selected":""}>${esc(s)}</option>`).join("")}
@@ -218,13 +278,33 @@ async function submitItem(e){
   }
   save();closeModals();renderAll();toast(editing?"Saved changes":"Automatically organized and saved");editing=null;categoryManuallySet=false;subcategoryManuallySet=false;
 }
-function renderCats(){$("#catList").innerHTML=cats.map(c=>`<div class="cat-item"><span>${iconForCategory(c)} ${esc(c)}</span><button data-delcat="${esc(c)}">×</button></div>`).join("");$$("#catList [data-delcat]").forEach(b=>b.onclick=()=>{const c=b.dataset.delcat;if(cats.length<=1)return toast("Keep at least one category");const used=items.some(i=>i.category===c);if(used&&!confirm(`“${c}” is used by saved items. Move those items to the first category and delete it?`))return;cats=cats.filter(x=>x!==c);delete subcats[c];items.forEach(i=>{if(i.category===c){i.category=cats[0];i.subcategory=(subcats[cats[0]]||["Other"])[0]}});save();renderCats();renderAll();toast("Category removed")})}
+function renderCats(){
+  $("#catList").innerHTML=cats.map(c=>`<div class="cat-item"><span class="cat-label">${iconForCategory(c)} ${esc(c)}</span><div class="cat-actions"><button data-editcat="${esc(c)}" title="Edit category">✎</button><button data-delcat="${esc(c)}" title="Delete category">×</button></div></div>`).join("");
+  $$("#catList [data-editcat]").forEach(b=>b.onclick=()=>{
+    const old=b.dataset.editcat;const next=prompt("Rename category",old)?.trim();
+    if(!next||next===old)return;
+    if(cats.some(c=>c.toLowerCase()===next.toLowerCase()))return toast("Category already exists");
+    const idx=cats.indexOf(old);cats[idx]=next;subcats[next]=subcats[old]||["General","Other"];delete subcats[old];
+    items.forEach(i=>{if(i.category===old)i.category=next});
+    if(currentCat===old)currentCat=next;save();renderCats();renderAll();toast("Category updated");
+  });
+  $$("#catList [data-delcat]").forEach(b=>b.onclick=()=>{
+    const c=b.dataset.delcat;if(cats.length<=1)return toast("Keep at least one category");
+    const used=items.some(i=>i.category===c);
+    if(used&&!confirm(`“${c}” contains saved items. Move them to another category before deleting?`))return;
+    const target=cats.find(x=>x!==c);
+    if(used){items.forEach(i=>{if(i.category===c){i.category=target;i.subcategory=(subcats[target]||["Other"])[0]}})}
+    cats=cats.filter(x=>x!==c);delete subcats[c];
+    if(currentCat===c){currentCat="";currentSub="";currentView="categories"}
+    save();renderCats();renderAll();toast("Category deleted");
+  });
+}
 function exportData(){const blob=new Blob([JSON.stringify({app:"SaveNest",version:3,categories:cats,subcategories:subcats,items},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="savenest-backup-v3.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Backup exported")}
 function importData(file){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.items)||!Array.isArray(d.categories))throw Error();items=d.items;cats=d.categories;subcats=d.subcategories||{};for(const c of cats)subcats[c]=subcats[c]||defaultSubs[c]||["General","Other"];save();renderAll();toast("Backup restored")}catch{toast("That backup file is not valid SaveNest data")}};r.readAsText(file)}
 function ensureLegacyItems(){items=items.map(i=>{let category=i.category||smartCategory(i.sourceTitle||i.title||"",i.sourceText||i.notes||"",i.url||"");const combined=(i.sourceTitle||" ")+" "+(i.sourceText||" ")+" "+(i.title||"")+" "+(i.notes||"");if(category==="Other"&&combined.trim())category=smartCategory(i.sourceTitle||i.title||"",i.sourceText||i.notes||"",i.url||"");const subcategory=i.subcategory&&((subcats[category]||[]).includes(i.subcategory))?i.subcategory:smartSubcategory(category,i.sourceTitle||i.title||"",i.sourceText||i.notes||"",i.url||"");const title=i.title||cleanTitle(i.sourceTitle||"",category,subcategory,i.sourceText||i.notes||"",i.url||"");const notes=i.notes||smartReminder(title,category,subcategory,i.sourceText||"");return {...i,category,subcategory,title,notes}})}
 
 $("#addBtn").onclick=addItem;$("#navAdd").onclick=addItem;$("#emptyAdd").onclick=addItem;$("#itemForm").onsubmit=submitItem;
-$("#viewCategories").onclick=()=>{currentView="categories";currentCat="";currentSub="";setNav("categories");renderAll()};
+$("#viewCategories").onclick=()=>{if(currentCat&&currentSub){currentView="subcategories";currentSub="";setNav("categories");renderAll();return}if(currentCat){currentView="subcategories";currentSub="";setNav("categories");renderAll();return}currentView="categories";currentCat="";currentSub="";setNav("categories");renderAll()};
 $("#url").oninput=async()=>{categoryManuallySet=false;subcategoryManuallySet=false;const p=platform($("#url").value);$("#platformHint").textContent=$("#url").value?`Detected platform: ${p}`:"Paste a link to detect the platform.";if($("#url").value){if(p==="YouTube"){const t=await fetchYouTubeTitle($("#url").value);if(t&&!$("#sharedTitle").value)$("#sharedTitle").value=t}await autoFillSmart({force:true})}};
 $("#category").onchange=()=>{categoryManuallySet=true;subcategoryManuallySet=false;fillSubcats($("#category").value);$("#smartStatus").textContent=`✏️ Category selected: ${$("#category").value}. SaveNest will keep it.`};
 $("#sharedTitle").oninput=()=>{if($("#url").value){categoryManuallySet=false;autoFillSmart({force:true})}};$("#sourceText").oninput=()=>{if($("#url").value){categoryManuallySet=false;autoFillSmart({force:true})}};$("#subcategory").onchange=()=>{subcategoryManuallySet=true};

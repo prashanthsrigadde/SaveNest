@@ -45,20 +45,19 @@
     <section class="category-section">
       <div class="section-head">
         <div><div class="section-kicker">ORGANIZE</div><div class="section-title">Your Categories</div><div class="section-count" id="categorySubtitle">Tap a category to browse</div></div>
-        <button class="text-btn" id="viewCategories">View all →</button>
       </div>
       <div id="categoryGrid" class="category-grid"></div>
     </section>
 
     <section class="recent-section">
       <div class="section-head">
-        <div><div class="section-kicker">LATEST</div><div class="section-title">Recently Saved</div><div class="section-count" id="libraryCount">0 saved items</div></div>
-        <select id="sortSelect" class="select">
+        <div><div class="section-kicker" id="recentKicker">LATEST</div><div class="section-title" id="recentTitle">Recently Saved</div><div class="section-count" id="recentSubtitle">0 saved items</div></div>
+        <div class="section-actions"><button class="text-btn" id="viewCategories">View all →</button><select id="sortSelect" class="select">
           <option value="newest">Newest first</option>
           <option value="oldest">Oldest first</option>
           <option value="az">A–Z</option>
           <option value="favorite">Favorites first</option>
-        </select>
+        </select></div>
       </div>
       <section id="items" class="cards"></section>
       <div id="empty" class="empty hidden">
@@ -118,7 +117,7 @@
 <!-- Category modal -->
 <div class="modal hidden" id="catModal">
   <div class="sheet">
-    <div class="sheet-head"><div><div class="sheet-title">Manage categories</div><div class="sheet-sub">Create categories that match your life.</div></div><button class="close" data-close>×</button></div>
+    <div class="sheet-head"><div><div class="sheet-title">Manage categories</div><div class="sheet-sub">Create, rename or remove categories to match your life.</div></div><button class="close" data-close>×</button></div>
     <div id="catList" class="cat-list"></div>
     <form id="catForm" class="cat-add"><input id="newCat" placeholder="New category name" maxlength="30"><button class="primary" type="submit">Add</button></form>
   </div>
@@ -131,11 +130,11 @@
     <div class="setting-grid">
       <button class="setting" id="exportBtn"><b>⬆ Backup library</b><small>Export all saved links as a JSON file.</small></button>
       <button class="setting" id="importBtn"><b>⬇ Restore library</b><small>Import a previous SaveNest backup.</small></button>
-      <button class="setting" id="manageCats"><b>▦ Manage categories</b><small>Add or remove your categories.</small></button>
+      <button class="setting" id="manageCats"><b>▦ Manage categories</b><small>Create, rename or delete categories and keep your library organized.</small></button>
       <button class="setting danger" id="clearAll"><b>⌫ Delete all saved items</b><small>This cannot be undone.</small></button>
     </div>
     <input type="file" id="importFile" accept="application/json" hidden>
-    <div class="about">SaveNest V3 • Smart titles & reminders • Category → Subcategory → Videos • No account required</div>
+    <div class="about">SaveNest V5 • Smart titles & reminders • Category → Subcategory → Videos • No account required</div>
   </div>
 </div>
 
