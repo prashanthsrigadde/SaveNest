@@ -82,20 +82,16 @@
 <!-- Add/Edit modal -->
 <div class="modal hidden" id="itemModal">
   <div class="sheet">
-    <div class="sheet-head"><div><div class="sheet-title" id="modalTitle">Save a link</div><div class="sheet-sub">Keep the original link — add your own organization.</div></div><button class="close" data-close>×</button></div>
+    <div class="sheet-head"><div><div class="sheet-title" id="modalTitle">Save a link</div><div class="sheet-sub">Paste or share a link — SaveNest will organize it automatically.</div></div><button class="close" data-close>×</button></div>
     <form id="itemForm">
       <label>Video / page link
         <input id="url" type="url" placeholder="https://www.instagram.com/... or https://youtube.com/..." required>
       </label>
       <div class="smart-banner">✨ <b>Smart Save</b><span>SaveNest will prepare a useful title and a personal reminder automatically. You can still edit them anytime.</span></div>
-      <label>Source title / caption <span class="optional">(optional)</span>
-        <input id="sharedTitle" placeholder="Taken automatically when available from the shared link">
-      </label>
-      <label>Extra content / caption <span class="optional">(optional)</span>
-        <textarea id="sourceText" rows="2" placeholder="If your share includes a caption or description, paste it here for a better smart result."></textarea>
-      </label>
+      <input id="sharedTitle" type="hidden">
+      <textarea id="sourceText" hidden></textarea>
       <div class="two">
-        <label>Smart Title
+        <label>SaveNest Title
           <input id="title" placeholder="SaveNest will create this automatically">
         </label>
         <label>Category
@@ -108,7 +104,7 @@
         </label>
         <div class="smart-action-wrap"><button type="button" class="secondary-btn" id="regenerateSmart">✨ Regenerate smart details</button></div>
       </div>
-      <label>Smart Reminder
+      <label>SaveNest Reminder
         <textarea id="notes" rows="4" placeholder="SaveNest will create a useful reminder automatically."></textarea>
       </label>
       <div class="platform-hint" id="platformHint">Paste a link to detect the platform.</div>
