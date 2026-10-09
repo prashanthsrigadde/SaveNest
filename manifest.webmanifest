@@ -1,7 +1,7 @@
 {
   "name": "SaveNest \u2014 Your Personal Content Library",
   "short_name": "SaveNest",
-  "start_url": "./?source=pwa",
+  "start_url": "./?source=pwa&savenest-install=v9",
   "display": "standalone",
   "background_color": "#0d0f14",
   "theme_color": "#17152e",
@@ -29,7 +29,7 @@
       "purpose": "any maskable"
     }
   ],
-  "id": "./",
+  "id": "./?savenest-install=v9",
   "scope": "./",
   "display_override": [
     "standalone",

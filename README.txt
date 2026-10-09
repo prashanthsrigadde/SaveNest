@@ -1,9 +1,11 @@
-SaveNest V8 FINAL — rebuilt from V7 features with V4 compatibility fixes.
+SaveNest V9 RECOVERY — built from V7 features with runtime-render fix, legacy-link migration, and a distinct PWA installation identity.
 
-Included: category/subcategory management, smart title/reminder, V1/V2/V3 data compatibility, YouTube embedded player, direct MP4/WebM playback, Instagram embed attempt with original-page fallback, and fresh service-worker cache version.
+CRITICAL FIX: the previous build referenced a missing #libraryCount DOM element. That caused a JavaScript TypeError during render, stopping the saved-video list from rendering. This build guards that optional element.
 
-Deploy all files to the root of an HTTPS static site (GitHub Pages, Netlify, etc.). Do not open index.html with file://.
+Deploy ALL files and the icons folder to the ROOT of an HTTPS site. If using GitHub Pages project hosting, deploy the contents of the SaveNest folder (not the outer folder) to the configured Pages source so index.html is at the site root/path. Do not open index.html via file://.
 
-After deployment: uninstall the old SaveNest PWA, open the new HTTPS URL in Chrome, refresh once, then install/add to Home Screen. LocalStorage data is per-origin; export a backup from the old app before changing domains if you need to preserve existing saves.
+Install recovery: uninstall old SaveNest from Android; in Chrome open the exact deployed HTTPS URL and refresh. If the old install remains, Chrome > Settings > Site settings > All sites > your SaveNest site > Clear data, then reopen the site and install. This clears site-local data too, so export a backup from the old app first if possible.
 
-Platform limitation: Instagram/TikTok/Facebook may block embedded playback. SaveNest provides an Open original page fallback; it cannot bypass platform restrictions.
+Legacy data: imports URL values from url/link/href/permalink/videoUrl fields and keeps existing valid http/https links. Data is stored per browser origin; switching domains does not automatically transfer localStorage.
+
+Playback: YouTube embed and direct MP4/WebM are supported. Instagram/TikTok/Facebook may block embedding; use Open original page fallback.

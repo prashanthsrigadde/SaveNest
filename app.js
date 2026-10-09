@@ -21,7 +21,7 @@ let subcats=firstStored([SUBKEY,"savenest_subcategories_v3","savenest_subcategor
 for(const c of defaultCats){if(!cats.some(x=>String(x).trim().toLowerCase()===c.toLowerCase()))cats.push(c);}
 for(const c of cats) subcats[c]=Array.isArray(subcats[c])&&subcats[c].length?subcats[c]:((defaultSubs[c]||["General","Other"]).slice());
 // If multiple generations exist, merge them without duplicating links.
-for(const key of ["savenest_items_v1","savenest_items_v2","savenest_items_v3"]){const legacy=readJSON(key,[]);if(Array.isArray(legacy))for(const item of legacy){if(item&&item.url&&!items.some(x=>x.url===item.url))items.push(item);}}
+for(const key of ["savenest_items_v1","savenest_items_v2","savenest_items_v3"]){const legacy=readJSON(key,[]);if(Array.isArray(legacy))for(const item of legacy){if(!item)continue;const u=String(item.url||item.link||item.href||item.permalink||item.videoUrl||"").trim();if(!u)continue;const normalized={...item,url:u};if(!items.some(x=>String(x.url||x.link||x.href||x.permalink||x.videoUrl||"").trim()===u))items.push(normalized);}}
 let currentView="all", currentCat="", currentSub="", editing=null, categoryManuallySet=false, subcategoryManuallySet=false;
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -221,7 +221,7 @@ function openSavedItem(id){const item=items.find(x=>x.id===id);if(!item||!item.u
  modal.classList.remove("hidden");}
 function renderStats(){$("#statTotal").textContent=items.length;$("#statCats").textContent=cats.length;$("#statFavs").textContent=items.filter(i=>i.favorite).length}
 function renderCategories(){
-  const counts={};items.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
+  const counts={};items.forEach(i=>{const k=String(i.category||"").trim().toLowerCase();counts[k]=(counts[k]||0)+1});
   const section=document.querySelector('.category-section');
   if(currentCat || currentView==="categories" || currentView==="subcategories") section?.classList.remove('hidden');
   if(currentCat){
@@ -254,17 +254,17 @@ function render(){
   renderCategories();
   const a=filtered();
   const inContext=Boolean(currentCat||currentSub);
-  $("#libraryCount").textContent=`${a.length} saved ${a.length===1?"item":"items"}`;
+  if($("#libraryCount")) $("#libraryCount").textContent=`${a.length} saved ${a.length===1?"item":"items"}`;
   $("#recentKicker").textContent=inContext?"SAVED CONTENT":"LATEST";
   $("#recentTitle").textContent=currentSub||currentCat||"Recently Saved";
   $("#recentSubtitle").textContent=inContext?`${currentCat}${currentSub?` · ${currentSub}`:""} · every saved video in this topic`:`${a.length} saved items`;
   $("#viewCategories").textContent=inContext?"‹ Back to topics":"View all →";
   $("#items").innerHTML=a.slice(0,currentView==="all"&&!currentCat&&!$("#search").value?6:a.length).map(card).join("");$("#empty").classList.toggle("hidden",a.length!==0);if(!a.length){$("#emptyTitle").textContent=items.length?"Nothing found here":"Your SaveNest is waiting";$("#emptyText").textContent=items.length?"Try another category, subcategory or search word.":"Save your first Instagram or YouTube video and organize it into a category."}$$("#items [data-fav]").forEach(b=>b.onclick=()=>{const i=items.find(x=>x.id===b.dataset.fav);if(!i)return;i.favorite=!i.favorite;save();render()});$$("#items [data-open]").forEach(b=>b.onclick=()=>openSavedItem(b.dataset.open));$$("#items [data-edit]").forEach(b=>b.onclick=()=>editItem(b.dataset.edit));$$("#items [data-delete]").forEach(b=>b.onclick=()=>deleteItem(b.dataset.delete));$("#clearSearch").classList.toggle("hidden",!$("#search").value)}
 function categoriesView(){
-  const counts={};items.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
+  const counts={};items.forEach(i=>{const k=String(i.category||"").trim().toLowerCase();counts[k]=(counts[k]||0)+1});
   if(currentView==="subcategories"){
     const subs=subcats[currentCat]||["Other"];
-    const subCounts={};items.filter(i=>i.category===currentCat).forEach(i=>subCounts[i.subcategory||"Other"]=(subCounts[i.subcategory||"Other"]||0)+1);
+    const subCounts={};items.filter(i=>String(i.category||"").trim().toLowerCase()===currentCat.trim().toLowerCase()).forEach(i=>{const k=String(i.subcategory||"Other").trim();subCounts[k]=(subCounts[k]||0)+1});
     $("#categoryGrid").innerHTML=`<button class="category-back" id="backCats">‹ All Categories</button>`+
       subs.map(s=>`<button class="category-card large" data-subcategory="${esc(s)}"><span class="category-icon">${iconForCategory(currentCat)}</span><span class="category-name">${esc(s)}</span><span class="category-count">${subCounts[s]||0} saved</span><span class="category-arrow">→</span></button>`).join("");
     $$("#categoryGrid [data-subcategory]").forEach(b=>b.onclick=()=>{
@@ -277,7 +277,7 @@ function categoriesView(){
     });
     $("#backCats").onclick=()=>{currentView="categories";currentCat="";currentSub="";renderAll()};
     $("#categorySubtitle").textContent=`${currentCat} · choose a topic`;
-    $("#libraryCount").textContent=`${subs.length} topics · ${items.filter(i=>i.category===currentCat).length} saved`;
+    if($("#libraryCount")) $("#libraryCount").textContent=`${subs.length} topics · ${items.filter(i=>String(i.category||"").trim().toLowerCase()===currentCat.trim().toLowerCase()).length} saved`;
     $("#items").innerHTML="";$("#empty").classList.add("hidden");
     $("#recentTitle").textContent=currentCat;
     $("#recentKicker").textContent="TOPICS";
@@ -285,10 +285,10 @@ function categoriesView(){
     $("#viewCategories").textContent="All categories →";
     return;
   }
-  $("#categoryGrid").innerHTML=cats.map(c=>`<button class="category-card large" data-category="${esc(c)}"><span class="category-icon">${iconForCategory(c)}</span><span class="category-name">${esc(c)}</span><span class="category-count">${counts[c]||0} saved · ${(subcats[c]||[]).length} topics</span><span class="category-arrow">→</span></button>`).join("");
+  $("#categoryGrid").innerHTML=cats.map(c=>`<button class="category-card large" data-category="${esc(c)}"><span class="category-icon">${iconForCategory(c)}</span><span class="category-name">${esc(c)}</span><span class="category-count">${counts[String(c).trim().toLowerCase()]||0} saved · ${(subcats[c]||[]).length} topics</span><span class="category-arrow">→</span></button>`).join("");
   $$("#categoryGrid [data-category]").forEach(b=>b.onclick=()=>openCategory(b.dataset.category));
   $("#categorySubtitle").textContent="Choose a category to browse by topic";
-  $("#items").innerHTML="";$("#empty").classList.add("hidden");$("#libraryCount").textContent=`${cats.length} categories`;
+  $("#items").innerHTML="";$("#empty").classList.add("hidden");if($("#libraryCount")) $("#libraryCount").textContent=`${cats.length} categories`;
   $("#recentTitle").textContent="Your categories";
   $("#recentKicker").textContent="ORGANIZE";
   $("#recentSubtitle").textContent="Each category opens into its own topics";
@@ -406,6 +406,8 @@ $("#clearAll").onclick=()=>{if(confirm("Delete ALL saved links? This cannot be u
 $$('.nav[data-view]').forEach(b=>b.onclick=()=>{const v=b.dataset.view;if(v==="settings"){openModal("#settingsModal");return}currentView=v;currentCat="";currentSub="";setNav(v);renderAll()});
 window.addEventListener("keydown",e=>{if(e.key==="Escape")closeModals()});
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
-ensureLegacyItems();normalizeLibrary();items=items.map(i=>({...i,id:String(i.id||crypto.randomUUID?.()||Date.now()+Math.random()),url:String(i.url||i.link||i.href||""),title:i.title||i.smartTitle||i.sourceTitle||"Saved link",notes:i.notes||i.reminder||i.description||"",category:i.category||cats[0]||"Other",subcategory:i.subcategory||i.subCategory||((subcats[i.category]||["Other"])[0]),platform:i.platform||platform(i.url||i.link||""),created:Number(i.created||i.savedAt||Date.now()),favorite:!!i.favorite})).filter(i=>/^https?:\/\//i.test(i.url));save();renderAll();
+items=items.map(i=>({...i,url:String(i.url||i.link||i.href||i.permalink||i.videoUrl||"").trim()})).filter(i=>/^https?:\/\//i.test(i.url));
+ensureLegacyItems();normalizeLibrary();
+items=items.map(i=>({...i,id:String(i.id||crypto.randomUUID?.()||Date.now()+Math.random()),url:String(i.url||i.link||i.href||i.permalink||i.videoUrl||"").trim(),title:i.title||i.smartTitle||i.sourceTitle||"Saved link",notes:i.notes||i.reminder||i.description||"",category:i.category||cats[0]||"Other",subcategory:i.subcategory||i.subCategory||((subcats[i.category]||["Other"])[0]),platform:i.platform||platform(i.url||i.link||i.href||""),created:Number(i.created||i.savedAt||Date.now()),favorite:!!i.favorite})).filter(i=>/^https?:\/\//i.test(i.url));save();renderAll();
 function handleSharedLink(){const p=new URLSearchParams(location.search),sharedUrl=p.get("url")||p.get("text"),sharedTitle=p.get("title");if(sharedUrl){const clean=(sharedUrl.match(/https?:\/\/[^\s]+/)||[sharedUrl])[0];setTimeout(async()=>{addItem();categoryManuallySet=false;subcategoryManuallySet=false;$("#url").value=clean;$("#sharedTitle").value=sharedTitle||"";$("#sourceText").value=(p.get("text")||"").replace(clean,"").trim();$("#platformHint").textContent=`Detected platform: ${platform(clean)}`;await autoFillSmart({force:true})},180);history.replaceState({},document.title,location.pathname)}}
 handleSharedLink();
