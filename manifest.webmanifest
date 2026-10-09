@@ -1,5 +1,5 @@
 {
-  "name": "SaveNest — Your Personal Content Library",
+  "name": "SaveNest \u2014 Your Personal Content Library",
   "short_name": "SaveNest",
   "start_url": "./?source=pwa",
   "display": "standalone",
@@ -13,7 +13,8 @@
       "title": "title",
       "text": "text",
       "url": "url"
-    }
+    },
+    "enctype": "application/x-www-form-urlencoded"
   },
   "icons": [
     {

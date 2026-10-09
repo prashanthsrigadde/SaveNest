@@ -1,4 +1,4 @@
-const CACHE='savenest-v9-recovery';
+const CACHE='savenest-v10-github-pages-icon-fix';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);await Promise.all(ASSETS.map(async path=>{try{const r=await fetch(path,{cache:'reload'});if(r.ok)await cache.put(path,r)}catch{}}));await self.skipWaiting()})()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.toLowerCase().includes('savenest')&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim()})()));
