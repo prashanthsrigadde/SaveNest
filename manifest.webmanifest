@@ -3,7 +3,7 @@
   "short_name": "SaveNest",
   "start_url": "./?source=pwa",
   "display": "standalone",
-  "background_color": "#f5f6fb",
+  "background_color": "#0d0f14",
   "theme_color": "#17152e",
   "description": "Save, organize and quickly find Instagram, YouTube and web content by category.",
   "share_target": {
@@ -28,5 +28,11 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "id": "./",
+  "scope": "./",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
   ]
 }

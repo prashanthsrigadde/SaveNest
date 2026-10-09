@@ -13,9 +13,15 @@ const defaultSubs={
   "Watch Later":["Important","Interesting","Other"],
   "Other":["General","Other"]
 };
-let items=readJSON(KEY,[]), cats=readJSON(CATKEY,null)||defaultCats.slice();
-let subcats=readJSON(SUBKEY,null)||{};
+// Compatibility migration: preserve V1/V2/V3 and V7 libraries; merge items by URL instead of hiding old saves.
+function firstStored(keys, fallback){for(const key of keys){const v=readJSON(key,null);if(v!==null)return v;}return fallback;}
+let items=firstStored([KEY,"savenest_items_v3","savenest_items_v2"],[]);
+let cats=firstStored([CATKEY,"savenest_categories_v3","savenest_categories_v2"],defaultCats.slice());
+let subcats=firstStored([SUBKEY,"savenest_subcategories_v3","savenest_subcategories_v2"],{});
+for(const c of defaultCats){if(!cats.some(x=>String(x).trim().toLowerCase()===c.toLowerCase()))cats.push(c);}
 for(const c of cats) subcats[c]=Array.isArray(subcats[c])&&subcats[c].length?subcats[c]:((defaultSubs[c]||["General","Other"]).slice());
+// If multiple generations exist, merge them without duplicating links.
+for(const key of ["savenest_items_v1","savenest_items_v2","savenest_items_v3"]){const legacy=readJSON(key,[]);if(Array.isArray(legacy))for(const item of legacy){if(item&&item.url&&!items.some(x=>x.url===item.url))items.push(item);}}
 let currentView="all", currentCat="", currentSub="", editing=null, categoryManuallySet=false, subcategoryManuallySet=false;
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -203,6 +209,16 @@ async function autoFillSmart({force=false}={}){
   if(force||!$("#notes").value)$("#notes").value=note;
   $("#smartStatus").textContent=`✨ Auto-organized: ${finalCat} → ${finalSub}`;
 }
+function youtubeId(url){try{const u=new URL(url);if(u.hostname.includes("youtu.be"))return u.pathname.split("/").filter(Boolean)[0]||"";if(u.hostname.includes("youtube.com")){return u.searchParams.get("v")||u.pathname.match(/\/(?:embed|shorts|live)\/([^/?]+)/)?.[1]||"";}}catch{}return ""}
+function videoKind(url){const host=(()=>{try{return new URL(url).hostname.toLowerCase()}catch{return ""}})();if(/\.(mp4|webm|m4v|ogv)(?:$|\?)/i.test(url))return "direct";if(youtubeId(url))return "youtube";if(host.includes("instagram.com"))return "instagram";if(host.includes("tiktok.com"))return "tiktok";if(host.includes("facebook.com")||host.includes("fb.watch"))return "facebook";return "web";}
+function ensurePlayer(){if($("#playerModal"))return;document.body.insertAdjacentHTML("beforeend",`<div class="modal hidden" id="playerModal" role="dialog" aria-modal="true" aria-label="Video player"><div class="sheet player-sheet"><div class="sheet-head"><div><div class="sheet-title" id="playerTitle">Play saved video</div><div class="sheet-sub" id="playerSub">Your saved content</div></div><button class="close" id="playerClose" aria-label="Close player">×</button></div><div id="playerBody" class="player-body"></div><div class="player-foot"><button class="secondary-btn" id="playerOpenOriginal">Open original page ↗</button><span id="playerHint"></span></div></div></div>`);$("#playerClose").onclick=closePlayer;$("#playerModal").addEventListener("click",e=>{if(e.target.id==="playerModal")closePlayer()});$("#playerOpenOriginal").onclick=()=>{const url=$("#playerModal").dataset.url;if(url)location.href=url};window.addEventListener("keydown",e=>{if(e.key==="Escape")closePlayer()});}
+function closePlayer(){const m=$("#playerModal");if(!m)return;const body=$("#playerBody");body.querySelectorAll("video,iframe").forEach(el=>{try{el.src="about:blank";el.pause?.()}catch{}});body.innerHTML="";m.classList.add("hidden");}
+function openSavedItem(id){const item=items.find(x=>x.id===id);if(!item||!item.url)return;let url;try{url=new URL(item.url);if(!/^https?:$/.test(url.protocol))throw Error();}catch{toast("This saved link is invalid. Edit it and paste a full https:// link.");return;}const kind=videoKind(url.href);if(kind==="web"){location.href=url.href;return;}ensurePlayer();const modal=$("#playerModal");modal.dataset.url=url.href;$("#playerTitle").textContent=item.title||"Saved video";$("#playerSub").textContent=`${item.platform||platform(url.href)} · ${domain(url.href)}`;$("#playerHint").textContent="Some platforms block embedded playback; use Open original page if needed.";const body=$("#playerBody");body.innerHTML="";
+ if(kind==="youtube"){const id=youtubeId(url.href);const frame=document.createElement("iframe");frame.src=`https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&playsinline=1`;frame.title=item.title||"YouTube video";frame.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";frame.allowFullscreen=true;frame.referrerPolicy="strict-origin-when-cross-origin";body.appendChild(frame);}
+ else if(kind==="direct"){const video=document.createElement("video");video.controls=true;video.autoplay=true;video.playsInline=true;video.preload="metadata";video.src=url.href;video.onerror=()=>{$("#playerHint").textContent="This video host does not allow playback here. Open the original URL."};body.appendChild(video);}
+ else if(kind==="instagram"){const frame=document.createElement("iframe");frame.src=url.href.replace(/\/?$/,"/")+"embed/captioned/";frame.title=item.title||"Instagram post";frame.allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share";frame.allowFullscreen=true;frame.referrerPolicy="strict-origin-when-cross-origin";body.appendChild(frame);}
+ else {body.innerHTML=`<div class="player-fallback"><div class="player-fallback-icon">↗</div><h3>Continue to ${esc(kind==="tiktok"?"TikTok":"the original platform")}</h3><p>This platform may not permit playback inside SaveNest.</p><button class="primary" id="fallbackOpen">Open original video</button></div>`;$("#fallbackOpen").onclick=()=>location.href=url.href;}
+ modal.classList.remove("hidden");}
 function renderStats(){$("#statTotal").textContent=items.length;$("#statCats").textContent=cats.length;$("#statFavs").textContent=items.filter(i=>i.favorite).length}
 function renderCategories(){
   const counts={};items.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
@@ -224,7 +240,7 @@ function renderCategories(){
 }
 function openCategory(c){currentCat=c;currentSub="";currentView="subcategories";setNav("categories");renderAll()}
 function filtered(){let q=$("#search").value.trim().toLowerCase();let catKey=(currentCat||"").trim().toLowerCase(),subKey=(currentSub||"").trim().toLowerCase();let a=items.filter(i=>currentView==="favorites"?i.favorite:true).filter(i=>!catKey||String(i.category||"").trim().toLowerCase()===catKey).filter(i=>!subKey||String(i.subcategory||"").trim().toLowerCase()===subKey);if(q)a=a.filter(i=>[i.title,i.url,i.notes,i.category,i.subcategory,i.platform].join(" ").toLowerCase().includes(q));const sort=$("#sortSelect").value;if(sort==="newest")a.sort((x,y)=>y.created-x.created);if(sort==="oldest")a.sort((x,y)=>x.created-y.created);if(sort==="az")a.sort((x,y)=>(x.title||"").localeCompare(y.title||""));if(sort==="favorite")a.sort((x,y)=>Number(y.favorite)-Number(x.favorite)||y.created-x.created);return a}
-function card(i){return `<article class="card"><div class="card-top"><span class="platform ${i.platform.toLowerCase()}">${i.platform==="Instagram"?"◎":i.platform==="YouTube"?"▶":"↗"} ${i.platform}</span><button class="fav ${i.favorite?"is-fav":""}" title="Favorite" data-fav="${i.id}">${i.favorite?"♥":"♡"}</button></div><h3>${esc(i.title||"Saved link")}</h3><div class="url">${esc(domain(i.url))} · ${fmt(i.created)}</div>${i.notes?`<div class="note">${esc(i.notes)}</div>`:""}<div class="meta"><span class="category-pill">${iconForCategory(i.category)} ${esc(i.category)}${i.subcategory?` · ${esc(i.subcategory)}`:""}</span><div class="actions"><button class="small-btn" data-open="${i.id}">Open</button><button class="small-btn" data-edit="${i.id}">Edit</button><button class="small-btn delete-btn" data-delete="${i.id}">Delete</button></div></div></article>`}
+function card(i){return `<article class="card"><div class="card-top"><span class="platform ${i.platform.toLowerCase()}">${i.platform==="Instagram"?"◎":i.platform==="YouTube"?"▶":"↗"} ${i.platform}</span><button class="fav ${i.favorite?"is-fav":""}" title="Favorite" data-fav="${i.id}">${i.favorite?"♥":"♡"}</button></div><h3>${esc(i.title||"Saved link")}</h3><div class="url">${esc(domain(i.url))} · ${fmt(i.created)}</div>${i.notes?`<div class="note">${esc(i.notes)}</div>`:""}<div class="meta"><span class="category-pill">${iconForCategory(i.category)} ${esc(i.category)}${i.subcategory?` · ${esc(i.subcategory)}`:""}</span><div class="actions"><button class="small-btn" data-open="${i.id}">Play / Open</button><button class="small-btn" data-edit="${i.id}">Edit</button><button class="small-btn delete-btn" data-delete="${i.id}">Delete</button></div></div></article>`}
 function render(){
   renderStats();
   const section=document.querySelector('.category-section');
@@ -243,12 +259,7 @@ function render(){
   $("#recentTitle").textContent=currentSub||currentCat||"Recently Saved";
   $("#recentSubtitle").textContent=inContext?`${currentCat}${currentSub?` · ${currentSub}`:""} · every saved video in this topic`:`${a.length} saved items`;
   $("#viewCategories").textContent=inContext?"‹ Back to topics":"View all →";
-  $("#items").innerHTML=a.slice(0,currentView==="all"&&!currentCat&&!$("#search").value?6:a.length).map(card).join("");$("#empty").classList.toggle("hidden",a.length!==0);if(!a.length){$("#emptyTitle").textContent=items.length?"Nothing found here":"Your SaveNest is waiting";$("#emptyText").textContent=items.length?"Try another category, subcategory or search word.":"Save your first Instagram or YouTube video and organize it into a category."}$$("#items [data-fav]").forEach(b=>b.onclick=()=>{const i=items.find(x=>x.id===b.dataset.fav);if(!i)return;i.favorite=!i.favorite;save();render()});$$("#items [data-open]").forEach(b=>b.onclick=()=>{
-    const i=items.find(x=>x.id===b.dataset.open);
-    if(!i||!i.url)return;
-    const w=window.open(i.url,"_blank","noopener,noreferrer");
-    if(!w)window.location.href=i.url;
-  });$$("#items [data-edit]").forEach(b=>b.onclick=()=>editItem(b.dataset.edit));$$("#items [data-delete]").forEach(b=>b.onclick=()=>deleteItem(b.dataset.delete));$("#clearSearch").classList.toggle("hidden",!$("#search").value)}
+  $("#items").innerHTML=a.slice(0,currentView==="all"&&!currentCat&&!$("#search").value?6:a.length).map(card).join("");$("#empty").classList.toggle("hidden",a.length!==0);if(!a.length){$("#emptyTitle").textContent=items.length?"Nothing found here":"Your SaveNest is waiting";$("#emptyText").textContent=items.length?"Try another category, subcategory or search word.":"Save your first Instagram or YouTube video and organize it into a category."}$$("#items [data-fav]").forEach(b=>b.onclick=()=>{const i=items.find(x=>x.id===b.dataset.fav);if(!i)return;i.favorite=!i.favorite;save();render()});$$("#items [data-open]").forEach(b=>b.onclick=()=>openSavedItem(b.dataset.open));$$("#items [data-edit]").forEach(b=>b.onclick=()=>editItem(b.dataset.edit));$$("#items [data-delete]").forEach(b=>b.onclick=()=>deleteItem(b.dataset.delete));$("#clearSearch").classList.toggle("hidden",!$("#search").value)}
 function categoriesView(){
   const counts={};items.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
   if(currentView==="subcategories"){
@@ -395,6 +406,6 @@ $("#clearAll").onclick=()=>{if(confirm("Delete ALL saved links? This cannot be u
 $$('.nav[data-view]').forEach(b=>b.onclick=()=>{const v=b.dataset.view;if(v==="settings"){openModal("#settingsModal");return}currentView=v;currentCat="";currentSub="";setNav(v);renderAll()});
 window.addEventListener("keydown",e=>{if(e.key==="Escape")closeModals()});
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
-ensureLegacyItems();normalizeLibrary();save();save();renderAll();
+ensureLegacyItems();normalizeLibrary();items=items.map(i=>({...i,id:String(i.id||crypto.randomUUID?.()||Date.now()+Math.random()),url:String(i.url||i.link||i.href||""),title:i.title||i.smartTitle||i.sourceTitle||"Saved link",notes:i.notes||i.reminder||i.description||"",category:i.category||cats[0]||"Other",subcategory:i.subcategory||i.subCategory||((subcats[i.category]||["Other"])[0]),platform:i.platform||platform(i.url||i.link||""),created:Number(i.created||i.savedAt||Date.now()),favorite:!!i.favorite})).filter(i=>/^https?:\/\//i.test(i.url));save();renderAll();
 function handleSharedLink(){const p=new URLSearchParams(location.search),sharedUrl=p.get("url")||p.get("text"),sharedTitle=p.get("title");if(sharedUrl){const clean=(sharedUrl.match(/https?:\/\/[^\s]+/)||[sharedUrl])[0];setTimeout(async()=>{addItem();categoryManuallySet=false;subcategoryManuallySet=false;$("#url").value=clean;$("#sharedTitle").value=sharedTitle||"";$("#sourceText").value=(p.get("text")||"").replace(clean,"").trim();$("#platformHint").textContent=`Detected platform: ${platform(clean)}`;await autoFillSmart({force:true})},180);history.replaceState({},document.title,location.pathname)}}
 handleSharedLink();

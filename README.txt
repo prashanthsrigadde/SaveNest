@@ -1,19 +1,9 @@
-SaveNest V5 FINAL
-=================
+SaveNest V8 FINAL — rebuilt from V7 features with V4 compatibility fixes.
 
-Premium library redesign focused on category-first browsing.
+Included: category/subcategory management, smart title/reminder, V1/V2/V3 data compatibility, YouTube embedded player, direct MP4/WebM playback, Instagram embed attempt with original-page fallback, and fresh service-worker cache version.
 
-New in V5:
-- Create, rename and delete categories.
-- Category -> Subcategory -> Saved videos navigation.
-- Opening a subcategory shows the subcategory name as the main title, not "Recently Saved".
-- Saved videos remain filtered to the selected category and subcategory.
-- Back to topics / all categories navigation.
-- Premium card, spacing and management UI refinement.
-- Existing V4 localStorage keys remain compatible.
+Deploy all files to the root of an HTTPS static site (GitHub Pages, Netlify, etc.). Do not open index.html with file://.
 
-Smart save behavior remains:
-- Detect platform and topic from shared link metadata/text where available.
-- Generate a useful title and reminder.
-- Auto-select category and subcategory.
-- Respect an explicit category choice when the user changes it.
+After deployment: uninstall the old SaveNest PWA, open the new HTTPS URL in Chrome, refresh once, then install/add to Home Screen. LocalStorage data is per-origin; export a backup from the old app before changing domains if you need to preserve existing saves.
+
+Platform limitation: Instagram/TikTok/Facebook may block embedded playback. SaveNest provides an Open original page fallback; it cannot bypass platform restrictions.
