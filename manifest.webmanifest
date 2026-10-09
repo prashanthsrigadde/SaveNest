@@ -1,5 +1,5 @@
 {
-  "name": "SaveNest \u2014 Your Personal Content Library",
+  "name": "SaveNest — Your Personal Content Library",
   "short_name": "SaveNest",
   "start_url": "./?source=pwa",
   "display": "standalone",
@@ -13,22 +13,22 @@
       "title": "title",
       "text": "text",
       "url": "url"
+    }
+  },
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
-    "enctype": "application/x-www-form-urlencoded"
-  },
- 
-"icons": [
-  {
-    "src": "./icon-192.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  },
-  {
-    "src": "./icon-512.png",
-    "sizes": "512x512",
-    "type": "image/png"
-  }
-],
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
   "id": "./",
   "scope": "./",
   "display_override": [
