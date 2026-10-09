@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#17152e">
   <meta name="description" content="Save, organize and revisit Instagram, YouTube and web content with smart titles, reminders and categories.">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
   <title>SaveNest</title>
 </head>
 <body>
@@ -139,6 +139,7 @@
   <div class="sheet">
     <div class="sheet-head"><div><div class="sheet-title">SaveNest</div><div class="sheet-sub">Private by default — data stays on this device.</div></div><button class="close" data-close>×</button></div>
     <div class="setting-grid">
+      <button class="setting" id="installAppBtn"><b>⬇ Install SaveNest</b><small>Install SaveNest on this device for app-style access.</small></button>
       <button class="setting" id="exportBtn"><b>⬆ Backup library</b><small>Export all saved links as a JSON file.</small></button>
       <button class="setting" id="importBtn"><b>⬇ Restore library</b><small>Import a previous SaveNest backup.</small></button>
       <button class="setting" id="manageCats"><b>▦ Manage categories</b><small>Create, rename or delete categories and keep your library organized.</small></button>
@@ -150,6 +151,6 @@
 </div>
 
 <div id="toast" class="toast"></div>
-<script src="app.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>

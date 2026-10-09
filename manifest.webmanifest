@@ -1,7 +1,7 @@
 {
-  "name": "SaveNest \u2014 Your Personal Content Library",
+  "name": "SaveNest — Your Personal Content Library",
   "short_name": "SaveNest",
-  "start_url": "./?source=pwa&savenest-install=v9",
+  "start_url": "./?source=pwa",
   "display": "standalone",
   "background_color": "#0d0f14",
   "theme_color": "#17152e",
@@ -17,19 +17,19 @@
   },
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "./icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "./icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "id": "./?savenest-install=v9",
+  "id": "./",
   "scope": "./",
   "display_override": [
     "standalone",
