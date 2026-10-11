@@ -31,6 +31,7 @@ function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&l
 function platform(url){try{const h=new URL(url).hostname.toLowerCase();if(h.includes("instagram"))return"Instagram";if(h.includes("youtube")||h.includes("youtu.be"))return"YouTube";return"Web"}catch{return"Web"}}
 function domain(url){try{return new URL(url).hostname.replace(/^www\./,"")}catch{return url}}
 function fmt(t){return new Date(t).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})}
+function themeForCategory(name){const n=String(name||"").toLowerCase();if(n.includes("motivat"))return"motivation";if(n.includes("health"))return"health";if(n.includes("study")||n.includes("education")||n.includes("nebosh"))return"study";if(n.includes("music"))return"music";if(n.includes("travel"))return"travel";if(n.includes("baby")||n.includes("family"))return"family";if(n.includes("quote"))return"quotes";return"general"}
 function iconForCategory(name){const n=name.toLowerCase();if(n.includes("study")||n.includes("education")||n.includes("nebosh"))return"📚";if(n.includes("motivat"))return"💡";if(n.includes("quote"))return"💬";if(n.includes("family"))return"❤️";if(n.includes("music"))return"🎵";if(n.includes("travel"))return"✈️";if(n.includes("work"))return"💼";if(n.includes("baby"))return"👶";if(n.includes("watch"))return"▶️";return"📁"}
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),2200)}
 function openModal(id){$(id).classList.remove("hidden")}function closeModals(){$$(".modal").forEach(x=>x.classList.add("hidden"))}
@@ -231,7 +232,7 @@ function renderCategories(){
   const visible=cats.slice(0,6);
   $("#categoryGrid").innerHTML=visible.map(c=>{
     const n=counts[c]||0;
-    return `<button class="category-card" data-category="${esc(c)}"><span class="category-icon">${iconForCategory(c)}</span><span class="category-name">${esc(c)}</span><span class="category-count">${n} saved · ${(subcats[c]||[]).length} topics</span><span class="category-arrow">→</span></button>`
+    return `<button class="category-card theme-${themeForCategory(c)}" data-category="${esc(c)}"><span class="category-icon">${iconForCategory(c)}</span><span class="category-name">${esc(c)}</span><span class="category-count">${n} saved · ${(subcats[c]||[]).length} topics</span><span class="category-arrow">→</span></button>`
   }).join("");
   if(cats.length>6)$("#categoryGrid").insertAdjacentHTML("beforeend",`<button class="category-card more-card" id="moreCategories"><span class="category-icon">＋</span><span class="category-name">View all</span><span class="category-count">${cats.length} categories</span><span class="category-arrow">→</span></button>`);
   $$('[data-category]').forEach(b=>b.onclick=()=>openCategory(b.dataset.category));
@@ -266,7 +267,7 @@ function categoriesView(){
     const subs=subcats[currentCat]||["Other"];
     const subCounts={};items.filter(i=>String(i.category||"").trim().toLowerCase()===currentCat.trim().toLowerCase()).forEach(i=>{const k=String(i.subcategory||"Other").trim();subCounts[k]=(subCounts[k]||0)+1});
     $("#categoryGrid").innerHTML=`<button class="category-back" id="backCats">‹ All Categories</button>`+
-      subs.map(s=>`<button class="category-card large" data-subcategory="${esc(s)}"><span class="category-icon">${iconForCategory(currentCat)}</span><span class="category-name">${esc(s)}</span><span class="category-count">${subCounts[s]||0} saved</span><span class="category-arrow">→</span></button>`).join("");
+      subs.map(s=>`<button class="category-card large theme-${themeForCategory(currentCat)}" data-subcategory="${esc(s)}"><span class="category-icon">${iconForCategory(currentCat)}</span><span class="category-name">${esc(s)}</span><span class="category-count">${subCounts[s]||0} saved</span><span class="category-arrow">→</span></button>`).join("");
     $$("#categoryGrid [data-subcategory]").forEach(b=>b.onclick=()=>{
       currentView="all";
       currentSub=(b.dataset.subcategory||"").trim();
@@ -285,7 +286,7 @@ function categoriesView(){
     $("#viewCategories").textContent="All categories →";
     return;
   }
-  $("#categoryGrid").innerHTML=cats.map(c=>`<button class="category-card large" data-category="${esc(c)}"><span class="category-icon">${iconForCategory(c)}</span><span class="category-name">${esc(c)}</span><span class="category-count">${counts[String(c).trim().toLowerCase()]||0} saved · ${(subcats[c]||[]).length} topics</span><span class="category-arrow">→</span></button>`).join("");
+  $("#categoryGrid").innerHTML=cats.map(c=>`<button class="category-card large theme-${themeForCategory(c)}" data-category="${esc(c)}"><span class="category-icon">${iconForCategory(c)}</span><span class="category-name">${esc(c)}</span><span class="category-count">${counts[String(c).trim().toLowerCase()]||0} saved · ${(subcats[c]||[]).length} topics</span><span class="category-arrow">→</span></button>`).join("");
   $$("#categoryGrid [data-category]").forEach(b=>b.onclick=()=>openCategory(b.dataset.category));
   $("#categorySubtitle").textContent="Choose a category to browse by topic";
   $("#items").innerHTML="";$("#empty").classList.add("hidden");if($("#libraryCount")) $("#libraryCount").textContent=`${cats.length} categories`;
@@ -306,8 +307,10 @@ async function submitItem(e){
   if(!url)return;
   // Always perform one final automatic pass for a new shared link, but never overwrite a category the user explicitly chose.
   await autoFillSmart({force:true});
-  const category=$("#category").value||smartCategory($("#sharedTitle").value,$("#sourceText").value,url);
-  const subcategory=$("#subcategory").value||smartSubcategory(category,$("#sharedTitle").value,$("#sourceText").value,url);
+  const inferredCategory=smartCategory($("#sharedTitle").value,$("#sourceText").value,url);
+  const category=categoryManuallySet?($("#category").value||inferredCategory):inferredCategory;
+  const inferredSubcategory=smartSubcategory(category,$("#sharedTitle").value,$("#sourceText").value,url);
+  const subcategory=subcategoryManuallySet?($("#subcategory").value||inferredSubcategory):inferredSubcategory;
   const cleanText=cleanSourceText($("#sourceText").value);
   $("#sourceText").value=cleanText;
   const title=$("#title").value.trim()||cleanTitle(candidateSourceTitle($("#sharedTitle").value,cleanText,category,url),category,subcategory,cleanText,url);
