@@ -107,3 +107,42 @@ html,body{background:radial-gradient(ellipse at 12% 0%,rgba(32,113,176,.25),tran
 .hero{background:linear-gradient(115deg,rgba(3,20,36,.96),rgba(5,54,76,.78)),url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1500&q=85') center/cover}.hero h1 span{color:#53efd2}.primary{background:#19d7b5;color:#03212a}.hero-add{background:#f5ffff;color:#062538}
 .search-wrap,.select,.sheet input,.sheet select,.sheet textarea,.setting,.sheet,.icon-btn,.close{background-color:#0b2032;color:#f4f8fc;border-color:var(--line)}
 @media(max-width:600px){.category-grid{grid-template-columns:1fr 1fr;gap:10px}.category-card{min-height:120px;padding:12px}.category-name{font-size:13px;overflow-wrap:anywhere}.category-count{font-size:10px}.category-card.large{min-height:108px}}
+
+/* V14: distinct cinematic imagery for each subcategory */
+.category-card.sub-men-motivation:before{background-image:url("https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-men-health:before{background-image:url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-discipline:before{background-image:url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-mindset:before{background-image:url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-productivity:before{background-image:url("https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-life-motivation:before{background-image:url("https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-other:before{background-image:url("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-motivation:before{background-image:url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-nebosh:before{background-image:url("https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-exam:before{background-image:url("https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-focus:before{background-image:url("https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-time-management:before{background-image:url("https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-skills:before{background-image:url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-study:before{background-image:url("https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-life-quotes:before{background-image:url("https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-love-quotes:before{background-image:url("https://images.unsplash.com/photo-1516589091380-5d8e87df6999?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-success-quotes:before{background-image:url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-quotes:before{background-image:url("https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-food-travel:before{background-image:url("https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-travel-guide:before{background-image:url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-nature:before{background-image:url("https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-travel:before{background-image:url("https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-baby-care:before{background-image:url("https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-baby-food:before{background-image:url("https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-baby:before{background-image:url("https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-family-memory:before{background-image:url("https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-family:before{background-image:url("https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-playlist:before{background-image:url("https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-lofi:before{background-image:url("https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-music:before{background-image:url("https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-mental-health:before{background-image:url("https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-fitness:before{background-image:url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-health:before{background-image:url("https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=85")}
+.category-card.sub-general:before{background-image:url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85")}
+
+/* V14 clean wordmark, no bird illustration */
+.brand-icon,.logo-icon{display:inline-flex;align-items:center;justify-content:center;border-radius:12px;background:linear-gradient(135deg,#27e3bd,#1688a7);color:#032338;font-weight:900;box-shadow:0 0 20px rgba(39,227,189,.18)}
