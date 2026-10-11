@@ -146,3 +146,41 @@ html,body{background:radial-gradient(ellipse at 12% 0%,rgba(32,113,176,.25),tran
 
 /* V14 clean wordmark, no bird illustration */
 .brand-icon,.logo-icon{display:inline-flex;align-items:center;justify-content:center;border-radius:12px;background:linear-gradient(135deg,#27e3bd,#1688a7);color:#032338;font-weight:900;box-shadow:0 0 20px rgba(39,227,189,.18)}
+
+/* V16: force each subcategory's own cinematic image onto the card itself */
+.category-grid .category-card.large[class*="theme-sub-"]{position:relative!important;isolation:isolate!important;overflow:hidden!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;}
+.category-grid .category-card.large[class*="theme-sub-"]::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1!important;background:linear-gradient(90deg,rgba(2,15,29,.94) 0%,rgba(2,15,29,.68) 58%,rgba(2,15,29,.25) 100%)!important;}
+.category-grid .category-card.large.theme-sub-men-motivation{background-image:url('https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-men-health{background-image:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-discipline{background-image:url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-mindset{background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-productivity{background-image:url('https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-life-motivation{background-image:url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-other{background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-motivation{background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-nebosh{background-image:url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-exam{background-image:url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-focus{background-image:url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-time-management{background-image:url('https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-skills{background-image:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-study{background-image:url('https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-life-quotes{background-image:url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-love-quotes{background-image:url('https://images.unsplash.com/photo-1516589091380-5d8e87df6999?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-success-quotes{background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-quotes{background-image:url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-food-travel{background-image:url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-travel-guide{background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-nature{background-image:url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-travel{background-image:url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-baby-care{background-image:url('https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-baby-food{background-image:url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-baby{background-image:url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-family-memory{background-image:url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-family{background-image:url('https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-playlist{background-image:url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-lofi{background-image:url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-music{background-image:url('https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-mental-health{background-image:url('https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-fitness{background-image:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-health{background-image:url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-sub-general{background-image:url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85')!important}
