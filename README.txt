@@ -14,3 +14,6 @@ Playback: YouTube embed and direct MP4/WebM are supported. Instagram/TikTok/Face
 V10 CHANGES: Instagram links now open their original Instagram URL directly (so Android can hand off to the Instagram app when installed). Only YouTube links open inside the SaveNest player; other external platforms open directly. Added an Install SaveNest action and PWA install prompt handling. Manifest paths and install identity use a simple relative scope.
 
 If an icon URL still returns 404 after deployment, check the actual GitHub Pages base URL/repository path and verify that the icons folder is uploaded beside index.html. The archive includes both icon PNG files.
+
+
+V17: fixes category/subcategory image layer stacking. Category artwork is now visible above card backgrounds; unique subject-based image URLs retained per topic. Service worker cache updated to v17.

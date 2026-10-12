@@ -184,3 +184,26 @@ html,body{background:radial-gradient(ellipse at 12% 0%,rgba(32,113,176,.25),tran
 .category-grid .category-card.large.theme-sub-fitness{background-image:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=85')!important}
 .category-grid .category-card.large.theme-sub-health{background-image:url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=85')!important}
 .category-grid .category-card.large.theme-sub-general{background-image:url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85')!important}
+
+
+/* V17: real visible image layer; previous negative z-index hid artwork behind the card background */
+.category-grid .category-card.large[class*="theme-sub-"]{
+  position:relative!important; isolation:isolate!important; overflow:hidden!important;
+  background-color:#071b2d!important; background-size:cover!important; background-position:center!important; background-repeat:no-repeat!important;
+  min-height:112px; border:1px solid rgba(110,210,224,.32)!important; color:#f4f8fc!important;
+}
+.category-grid .category-card.large[class*="theme-sub-"]::before{
+  content:""!important; position:absolute!important; inset:0!important; z-index:0!important; display:block!important;
+  background:linear-gradient(90deg,rgba(2,13,25,.92) 0%,rgba(2,13,25,.67) 56%,rgba(2,13,25,.20) 100%)!important; pointer-events:none!important;
+}
+.category-grid .category-card.large[class*="theme-sub-"] > *{position:relative!important;z-index:1!important;color:#f7fbff!important}
+.category-grid .category-card.large[class*="theme-sub-"] .category-count{color:#d4e6f2!important}
+/* Distinct subject-matched art for the main categories too */
+.category-grid .category-card.large.theme-motivation{background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-health{background-image:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-study{background-image:url('https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-music{background-image:url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-travel{background-image:url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-family{background-image:url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-quotes{background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85')!important}
+.category-grid .category-card.large.theme-general{background-image:url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85')!important}
