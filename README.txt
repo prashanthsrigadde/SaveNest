@@ -1,19 +1,9 @@
-SaveNest V9 RECOVERY — built from V7 features with runtime-render fix, legacy-link migration, and a distinct PWA installation identity.
+SaveNest V18 - Sample-matched cinematic layout
 
-CRITICAL FIX: the previous build referenced a missing #libraryCount DOM element. That caused a JavaScript TypeError during render, stopping the saved-video list from rendering. This build guards that optional element.
+Upload all files inside this SaveNest folder to the root of your GitHub Pages repository. Keep icon-192.png and icon-512.png at repository root.
 
-Deploy ALL files and the icons folder to the ROOT of an HTTPS site. If using GitHub Pages project hosting, deploy the contents of the SaveNest folder (not the outer folder) to the configured Pages source so index.html is at the site root/path. Do not open index.html via file://.
+Features retained: YouTube embedded playback, Instagram direct opening, saved-link/category local storage compatibility, category and subcategory management.
 
-Install recovery: uninstall old SaveNest from Android; in Chrome open the exact deployed HTTPS URL and refresh. If the old install remains, Chrome > Settings > Site settings > All sites > your SaveNest site > Clear data, then reopen the site and install. This clears site-local data too, so export a backup from the old app first if possible.
+V18 updates: two-column Quick Categories, cinematic category hero with video count, distinct topic card images, improved SaveNest bird mark, and updated cache name.
 
-Legacy data: imports URL values from url/link/href/permalink/videoUrl fields and keeps existing valid http/https links. Data is stored per browser origin; switching domains does not automatically transfer localStorage.
-
-Playback: YouTube embed and direct MP4/WebM are supported. Instagram/TikTok/Facebook may block embedding; use Open original page fallback.
-
-
-V10 CHANGES: Instagram links now open their original Instagram URL directly (so Android can hand off to the Instagram app when installed). Only YouTube links open inside the SaveNest player; other external platforms open directly. Added an Install SaveNest action and PWA install prompt handling. Manifest paths and install identity use a simple relative scope.
-
-If an icon URL still returns 404 after deployment, check the actual GitHub Pages base URL/repository path and verify that the icons folder is uploaded beside index.html. The archive includes both icon PNG files.
-
-
-V17: fixes category/subcategory image layer stacking. Category artwork is now visible above card backgrounds; unique subject-based image URLs retained per topic. Service worker cache updated to v17.
+Category images are remote Unsplash image URLs and require internet access. This version has been syntax-checked, but should still be tested on your phone after deployment.
