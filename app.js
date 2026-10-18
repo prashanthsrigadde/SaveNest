@@ -33,6 +33,42 @@ function domain(url){try{return new URL(url).hostname.replace(/^www\./,"")}catch
 function fmt(t){return new Date(t).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})}
 function themeForCategory(name){const n=String(name||"").toLowerCase();if(n.includes("motivat"))return"motivation";if(n.includes("health"))return"health";if(n.includes("study")||n.includes("education")||n.includes("nebosh"))return"study";if(n.includes("music"))return"music";if(n.includes("travel"))return"travel";if(n.includes("baby")||n.includes("family"))return"family";if(n.includes("quote"))return"quotes";return"general"}
 function themeForSubcategory(category, sub){const c=String(category||"").toLowerCase(),s=String(sub||"").toLowerCase();if(c.includes("motivat")){if(s.includes("men"))return"sub-men-motivation";if(s.includes("health"))return"sub-men-health";if(s.includes("discipline"))return"sub-discipline";if(s.includes("mind"))return"sub-mindset";if(s.includes("product"))return"sub-productivity";if(s.includes("life"))return"sub-life-motivation";if(s.includes("other"))return"sub-other";return"sub-motivation"}if(c.includes("study")||c.includes("education")||c.includes("nebosh")){if(s.includes("nebosh")||s.includes("safety"))return"sub-nebosh";if(s.includes("exam"))return"sub-exam";if(s.includes("focus")||s.includes("product"))return"sub-focus";if(s.includes("time"))return"sub-time-management";if(s.includes("skill"))return"sub-skills";return"sub-study"}if(c.includes("quote")){if(s.includes("life"))return"sub-life-quotes";if(s.includes("love"))return"sub-love-quotes";if(s.includes("success"))return"sub-success-quotes";return"sub-quotes"}if(c.includes("travel")){if(s.includes("food"))return"sub-food-travel";if(s.includes("guide"))return"sub-travel-guide";if(s.includes("nature"))return"sub-nature";return"sub-travel"}if(c.includes("baby")){if(s.includes("care"))return"sub-baby-care";if(s.includes("food"))return"sub-baby-food";return"sub-baby"}if(c.includes("family")){if(s.includes("memory"))return"sub-family-memory";return"sub-family"}if(c.includes("music")){if(s.includes("playlist"))return"sub-playlist";if(s.includes("lofi")||s.includes("background"))return"sub-lofi";return"sub-music"}if(c.includes("health")){if(s.includes("mental"))return"sub-mental-health";if(s.includes("fitness"))return"sub-fitness";return"sub-health"}return"sub-general"}
+function imageForTopic(category, sub){
+ const c=String(category||"").toLowerCase(), s=String(sub||"").toLowerCase();
+ const images={
+  "sub-men-motivation":"https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=1200&q=85",
+  "sub-men-health":"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=85",
+  "sub-discipline":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=85",
+  "sub-mindset":"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85",
+  "sub-productivity":"https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=1200&q=85",
+  "sub-life-motivation":"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=85",
+  "sub-nebosh":"https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1200&q=85",
+  "sub-exam":"https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=85",
+  "sub-focus":"https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=85",
+  "sub-time-management":"https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1200&q=85",
+  "sub-skills":"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=85",
+  "sub-life-quotes":"https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1200&q=85",
+  "sub-love-quotes":"https://images.unsplash.com/photo-1516589091380-5d8e87df6999?auto=format&fit=crop&w=1200&q=85",
+  "sub-success-quotes":"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85",
+  "sub-food-travel":"https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=85",
+  "sub-travel-guide":"https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=85",
+  "sub-nature":"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=85",
+  "sub-baby-care":"https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1200&q=85",
+  "sub-baby-food":"https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85",
+  "sub-family-memory":"https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=85",
+  "sub-playlist":"https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=85",
+  "sub-lofi":"https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=85",
+  "sub-mental-health":"https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=85",
+  "sub-fitness":"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=85"
+ };
+ const theme=themeForSubcategory(category,sub); if(images[theme]) return images[theme];
+ if(c.includes("music"))return "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=85";
+ if(c.includes("travel"))return "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=85";
+ if(c.includes("baby"))return "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1200&q=85";
+ if(c.includes("family"))return "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=85";
+ if(c.includes("quote"))return "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1200&q=85";
+ return "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85";
+}
 function iconForCategory(name){const n=name.toLowerCase();if(n.includes("study")||n.includes("education")||n.includes("nebosh"))return"📚";if(n.includes("motivat"))return"💡";if(n.includes("quote"))return"💬";if(n.includes("family"))return"❤️";if(n.includes("music"))return"🎵";if(n.includes("travel"))return"✈️";if(n.includes("work"))return"💼";if(n.includes("baby"))return"👶";if(n.includes("watch"))return"▶️";return"📁"}
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),2200)}
 function openModal(id){$(id).classList.remove("hidden")}function closeModals(){$$(".modal").forEach(x=>x.classList.add("hidden"))}
@@ -256,6 +292,10 @@ function render(){
   renderCategories();
   const a=filtered();
   const inContext=Boolean(currentCat||currentSub);
+  let topicHero=document.getElementById("topicHero");
+  if(!topicHero){topicHero=document.createElement("div");topicHero.id="topicHero";topicHero.className="topic-hero hidden";const itemsEl=document.getElementById("items");itemsEl.parentNode.insertBefore(topicHero,itemsEl);}
+  if(currentSub){const image=imageForTopic(currentCat,currentSub);topicHero.className="topic-hero";topicHero.style.backgroundImage=`linear-gradient(0deg,rgba(2,13,25,.96),rgba(2,13,25,.08) 85%),url("${image}")`;topicHero.innerHTML=`<button class="topic-hero-back" id="topicHeroBack">‹ ${esc(currentCat)}</button><div class="topic-hero-copy"><div class="topic-hero-kicker">SAVED COLLECTION</div><h2>${esc(currentSub)}</h2><p>${esc(currentCat)} · curated videos and links</p><span class="topic-hero-count">${filtered().length} saved items</span></div>`;document.getElementById("topicHeroBack").onclick=()=>{currentSub="";currentView="subcategories";renderAll();};}
+  else {topicHero.className="topic-hero hidden";topicHero.style.backgroundImage="none";topicHero.innerHTML="";}
   if($("#libraryCount")) $("#libraryCount").textContent=`${a.length} saved ${a.length===1?"item":"items"}`;
   $("#recentKicker").textContent=inContext?"SAVED CONTENT":"LATEST";
   $("#recentTitle").textContent=currentSub||currentCat||"Recently Saved";
