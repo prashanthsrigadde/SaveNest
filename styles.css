@@ -264,6 +264,27 @@ main{padding-top:18px}.search-wrap{background:#f6f8fb;border-radius:28px;border:
 .category-grid .theme-sub-lofi:before{background-image:url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=900&q=85')!important}
 .category-grid .theme-sub-mental-health:before{background-image:url('https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=900&q=85')!important}
 .category-grid .theme-sub-fitness:before{background-image:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=900&q=85')!important}
+/* V20: distinct, topic-relevant artwork for travel, work, family and watch-later subcategories */
+.category-grid .theme-sub-trip-ideas:before{background-image:url('https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-travel-tips:before{background-image:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-wisdom:before{background-image:url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-howto:before{background-image:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-baby-development:before{background-image:url('https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-baby-activities:before{background-image:url('https://images.unsplash.com/photo-1476231682828-37e571bc172f?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-parenting:before{background-image:url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-family-ideas:before{background-image:url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-artists:before{background-image:url('https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-songs:before{background-image:url('https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-career:before{background-image:url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-business:before{background-image:url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-work-ideas:before{background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-work:before{background-image:url('https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-watch-important:before{background-image:url('https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-watch-interesting:before{background-image:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-watch-later:before{background-image:url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-other:before{background-image:url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=900&q=85')!important}
+.category-grid .theme-sub-general:before{background-image:url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=85')!important}
+
 @media(max-width:600px){.category-detail-hero{min-height:270px;padding:13px 14px 18px}.category-hero-copy h2{font-size:26px}.category-card{min-height:112px!important}.brand-name{font-size:23px}}
 
 

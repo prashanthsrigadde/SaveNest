@@ -32,7 +32,22 @@ function platform(url){try{const h=new URL(url).hostname.toLowerCase();if(h.incl
 function domain(url){try{return new URL(url).hostname.replace(/^www\./,"")}catch{return url}}
 function fmt(t){return new Date(t).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})}
 function themeForCategory(name){const n=String(name||"").toLowerCase();if(n.includes("motivat"))return"motivation";if(n.includes("health"))return"health";if(n.includes("study")||n.includes("education")||n.includes("nebosh"))return"study";if(n.includes("music"))return"music";if(n.includes("travel"))return"travel";if(n.includes("baby")||n.includes("family"))return"family";if(n.includes("quote"))return"quotes";return"general"}
-function themeForSubcategory(category, sub){const c=String(category||"").toLowerCase(),s=String(sub||"").toLowerCase();if(c.includes("motivat")){if(s.includes("men"))return"sub-men-motivation";if(s.includes("health"))return"sub-men-health";if(s.includes("discipline"))return"sub-discipline";if(s.includes("mind"))return"sub-mindset";if(s.includes("product"))return"sub-productivity";if(s.includes("life"))return"sub-life-motivation";if(s.includes("other"))return"sub-other";return"sub-motivation"}if(c.includes("study")||c.includes("education")||c.includes("nebosh")){if(s.includes("nebosh")||s.includes("safety"))return"sub-nebosh";if(s.includes("exam"))return"sub-exam";if(s.includes("focus")||s.includes("product"))return"sub-focus";if(s.includes("time"))return"sub-time-management";if(s.includes("skill"))return"sub-skills";return"sub-study"}if(c.includes("quote")){if(s.includes("life"))return"sub-life-quotes";if(s.includes("love"))return"sub-love-quotes";if(s.includes("success"))return"sub-success-quotes";return"sub-quotes"}if(c.includes("travel")){if(s.includes("food"))return"sub-food-travel";if(s.includes("guide"))return"sub-travel-guide";if(s.includes("nature"))return"sub-nature";return"sub-travel"}if(c.includes("baby")){if(s.includes("care"))return"sub-baby-care";if(s.includes("food"))return"sub-baby-food";return"sub-baby"}if(c.includes("family")){if(s.includes("memory"))return"sub-family-memory";return"sub-family"}if(c.includes("music")){if(s.includes("playlist"))return"sub-playlist";if(s.includes("lofi")||s.includes("background"))return"sub-lofi";return"sub-music"}if(c.includes("health")){if(s.includes("mental"))return"sub-mental-health";if(s.includes("fitness"))return"sub-fitness";return"sub-health"}return"sub-general"}
+function themeForSubcategory(category, sub){
+ const c=String(category||"").toLowerCase(),s=String(sub||"").toLowerCase();
+ const has=(...words)=>words.some(w=>s.includes(w));
+ if(c.includes("motivat")){if(has("men's motivation","mens motivation","men motivation"))return"sub-men-motivation";if(has("health"))return"sub-men-health";if(has("discipline"))return"sub-discipline";if(has("mind"))return"sub-mindset";if(has("product"))return"sub-productivity";if(has("life"))return"sub-life-motivation";return"sub-motivation"}
+ if(c.includes("study")||c.includes("education")||c.includes("nebosh")){if(has("nebosh","fire","risk","workplace","safety","hse"))return"sub-nebosh";if(has("exam"))return"sub-exam";if(has("focus","concentration"))return"sub-focus";if(has("time"))return"sub-time-management";if(has("skill","course","computer"))return"sub-skills";if(has("how to"))return"sub-howto";return"sub-study"}
+ if(c.includes("quote")){if(has("life"))return"sub-life-quotes";if(has("love","relationship"))return"sub-love-quotes";if(has("success"))return"sub-success-quotes";if(has("wisdom"))return"sub-wisdom";return"sub-quotes"}
+ if(c.includes("travel")){if(has("food"))return"sub-food-travel";if(has("place","destination","nature"))return"sub-nature";if(has("trip","idea","itinerary","vacation","holiday"))return"sub-trip-ideas";if(has("tip","hack","packing","visa","flight","hotel"))return"sub-travel-tips";if(has("guide","tour"))return"sub-travel-guide";return"sub-travel"}
+ if(c.includes("baby")){if(has("food","feeding"))return"sub-baby-food";if(has("development","milestone"))return"sub-baby-development";if(has("activity","play"))return"sub-baby-activities";if(has("parent"))return"sub-parenting";return"sub-baby-care"}
+ if(c.includes("family")){if(has("memory","memories"))return"sub-family-memory";if(has("parent"))return"sub-parenting";if(has("baby"))return"sub-baby-care";return"sub-family-ideas"}
+ if(c.includes("music")){if(has("playlist","playlists"))return"sub-playlist";if(has("artist","singer"))return"sub-artists";if(has("lofi","background","instrumental"))return"sub-lofi";if(has("song"))return"sub-songs";return"sub-music"}
+ if(c.includes("work")){if(has("career"))return"sub-career";if(has("business"))return"sub-business";if(has("idea"))return"sub-work-ideas";return"sub-work"}
+ if(c.includes("watch")){if(has("important"))return"sub-watch-important";if(has("interesting"))return"sub-watch-interesting";return"sub-watch-later"}
+ if(c.includes("health")){if(has("mental"))return"sub-mental-health";if(has("fitness"))return"sub-fitness";return"sub-health"}
+ if(c.includes("other")){if(has("general"))return"sub-general";return"sub-other"}
+ return"sub-general";
+}
 function imageForTopic(category, sub){
  const c=String(category||"").toLowerCase(), s=String(sub||"").toLowerCase();
  const images={
@@ -59,15 +74,34 @@ function imageForTopic(category, sub){
   "sub-playlist":"https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=85",
   "sub-lofi":"https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=85",
   "sub-mental-health":"https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=85",
-  "sub-fitness":"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=85"
+  "sub-fitness":"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=85",
+  "sub-trip-ideas":"https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=85",
+  "sub-travel-tips":"https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=85",
+  "sub-wisdom":"https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1200&q=85",
+  "sub-howto":"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=85",
+  "sub-baby-development":"https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=1200&q=85",
+  "sub-baby-activities":"https://images.unsplash.com/photo-1476231682828-37e571bc172f?auto=format&fit=crop&w=1200&q=85",
+  "sub-parenting":"https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=85",
+  "sub-family-ideas":"https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1200&q=85",
+  "sub-artists":"https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=85",
+  "sub-songs":"https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=1200&q=85",
+  "sub-career":"https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=85",
+  "sub-business":"https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85",
+  "sub-work-ideas":"https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=85",
+  "sub-work":"https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=85",
+  "sub-watch-important":"https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=85",
+  "sub-watch-interesting":"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=85",
+  "sub-watch-later":"https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=85",
+  "sub-other":"https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=85",
+  "sub-general":"https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85"
  };
  const theme=themeForSubcategory(category,sub); if(images[theme]) return images[theme];
- if(c.includes("music"))return "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=85";
- if(c.includes("travel"))return "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=85";
- if(c.includes("baby"))return "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1200&q=85";
- if(c.includes("family"))return "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=85";
- if(c.includes("quote"))return "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1200&q=85";
- return "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85";
+ if(c.includes("music"))return images[theme]||"https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=85";
+ if(c.includes("travel"))return images[theme]||"https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=85";
+ if(c.includes("baby"))return images[theme]||"https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1200&q=85";
+ if(c.includes("family"))return images[theme]||"https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=85";
+ if(c.includes("quote"))return images[theme]||"https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1200&q=85";
+ return images[theme]||"https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85";
 }
 function iconForCategory(name){const n=name.toLowerCase();if(n.includes("study")||n.includes("education")||n.includes("nebosh"))return"📚";if(n.includes("motivat"))return"💡";if(n.includes("quote"))return"💬";if(n.includes("family"))return"❤️";if(n.includes("music"))return"🎵";if(n.includes("travel"))return"✈️";if(n.includes("work"))return"💼";if(n.includes("baby"))return"👶";if(n.includes("watch"))return"▶️";return"📁"}
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),2200)}
