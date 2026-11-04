@@ -296,3 +296,15 @@ main{padding-top:18px}.search-wrap{background:#f6f8fb;border-radius:28px;border:
 .topic-hero{display:flex;min-height:300px;margin:0 0 18px;padding:14px 16px 20px;border-radius:22px;flex-direction:column;justify-content:space-between;background-size:cover;background-position:center;border:1px solid rgba(102,208,222,.28);box-shadow:0 16px 40px rgba(0,0,0,.28);color:#fff;overflow:hidden;}
 .topic-hero.hidden{display:none!important}.topic-hero-back{align-self:flex-start;border:1px solid rgba(255,255,255,.25);background:rgba(3,20,35,.52);color:#fff;border-radius:18px;padding:8px 12px;font-size:12px}.topic-hero-copy{margin-top:auto}.topic-hero-kicker{font-size:10px;letter-spacing:1.5px;color:#7cebd9;font-weight:700}.topic-hero-copy h2{font-size:28px;line-height:1.1;margin:8px 0 6px}.topic-hero-copy p{font-size:13px;color:#dce8ef;margin:0 0 12px}.topic-hero-count{display:inline-flex;border-radius:20px;background:rgba(25,111,157,.72);padding:6px 11px;font-size:11px;color:#fff}
 @media(max-width:600px){.topic-hero{min-height:270px;padding:13px 14px 18px}.topic-hero-copy h2{font-size:26px}}
+
+
+/* V21: one-column vertical category/topic list on every screen */
+.category-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+.category-grid .category-card{width:100%!important;min-height:104px!important;grid-template-columns:42px minmax(0,1fr) 20px!important;grid-template-rows:auto auto!important;padding:14px 16px!important}
+.category-grid .category-card .category-icon{grid-column:1!important;grid-row:1/3!important}
+.category-grid .category-card .category-name{grid-column:2!important;grid-row:1!important;font-size:15px!important;white-space:normal!important;overflow-wrap:anywhere!important}
+.category-grid .category-card .category-count{grid-column:2!important;grid-row:2!important;font-size:11px!important}
+.category-grid .category-card .category-arrow{grid-column:3!important;grid-row:1/3!important}
+@media(max-width:600px){.category-grid{grid-template-columns:minmax(0,1fr)!important;gap:10px!important}.category-grid .category-card{min-height:96px!important;padding:12px 14px!important;grid-template-columns:38px minmax(0,1fr) 18px!important}.category-grid .category-card .category-name{font-size:14px!important}.category-grid .category-card .category-count{font-size:10px!important}}
+/* Do not display platform engagement fragments in saved descriptions. */
+.note{white-space:pre-line;overflow-wrap:anywhere}

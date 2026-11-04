@@ -116,14 +116,19 @@ function textFromUrl(url=""){
   }catch{return ""}
 }
 function cleanSourceText(raw=""){
-  let s=String(raw||"");
-  s=s.replace(/https?:\/\/\S+/gi," ");
-  // Remove common social-media engagement/UI text. These are not content.
-  s=s.replace(/\b[\d,.]+\s*(?:k|m|b)?\s*(?:likes?|liked)\b/gi," ");
-  s=s.replace(/\b[\d,.]+\s*(?:k|m|b)?\s*(?:comments?|replies)\b/gi," ");
-  s=s.replace(/\b[\d,.]+\s*(?:k|m|b)?\s*(?:shares?|sends?|saves?|views?)\b/gi," ");
-  s=s.replace(/\b(?:like|liked|comment|comments|share|shares|send|save|saves|follow|following|subscribe|subscribed)\b\s*(?:now|this|below)?/gi," ");
-  s=s.replace(/\b(?:original audio|use audio|use template|see translation|translate|more|view all|reply)\b/gi," ");
+  let s=String(raw||"").replace(/https?:\/\/\S+/gi," ");
+  // Strip social-network engagement counters and action labels, not the actual caption.
+  s=s.replace(/\b[\d,.]+\s*(?:k|m|b)?\s*(?:likes?|comments?|replies|shares?|sends?|saves?|views?)\b/gi," ");
+  s=s.replace(/\b(?:likes?|comments?|replies|shares?|sends?|saves?|follow(?:ing)?|subscribe(?:d)?|original audio|use audio|use template|see translation|translate|view all)\s*[:·-]?\s*[\d,.]*\s*(?:k|m|b)?\b/gi," ");
+  // Remove standalone UI rows such as “Like 1.2K · Comment 24 · Share”.
+  s=s.split(/\r?\n/).filter(line=>{
+    const t=line.trim().toLowerCase();
+    if(!t)return false;
+    if(/^(?:like|liked|comment|comments|share|send|save|follow|more|reply|view insights)(?:\s+[\d,.kmb]+)?$/.test(t))return false;
+    if(/^(?:\d[\d,.]*\s*(?:k|m)?\s*)?(?:likes?|comments?|shares?|replies|views?)$/.test(t))return false;
+    return true;
+  }).join("\n");
+  s=s.replace(/\b(?:like|liked|comment|comments|share|shares|send|save|saves|follow|following|subscribe|subscribed)\b/gi," ");
   s=s.replace(/^[\s|•·–—:,-]+|[\s|•·–—:,-]+$/g,"");
   return s.replace(/[ \t]+/g," ").replace(/\n{2,}/g,"\n").trim();
 }
@@ -222,8 +227,8 @@ async function fetchExternalMetadata(url){
     try{
       const r=await fetch(ep,{headers:{Accept:"application/json"}}); if(!r.ok)continue;
       const d=await r.json();
-      const title=d.title||d.data?.title||"";
-      const description=d.description||d.data?.description||"";
+      const title=cleanSourceText(d.title||d.data?.title||"");
+      const description=cleanSourceText(d.description||d.data?.description||"");
       if(title||description)return {title,description};
     }catch{}
   }
