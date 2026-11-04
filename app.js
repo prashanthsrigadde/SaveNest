@@ -305,6 +305,7 @@ function renderCategories(){
     // Context pages are rendered by categoriesView or the item view; don't show the home category grid.
     if(currentView!=="categories" && currentView!=="subcategories") { section?.classList.add('hidden'); return; }
   }
+  const title=document.querySelector('.category-section .section-title'); if(title)title.textContent="Quick Categories";
   const visible=cats.slice(0,6);
   $("#categoryGrid").innerHTML=visible.map(c=>{
     const n=counts[c]||0;
@@ -315,17 +316,19 @@ function renderCategories(){
   $("#moreCategories")?.addEventListener("click",()=>{currentView="categories";currentCat="";currentSub="";setNav("categories");renderAll()});
   $("#categorySubtitle").textContent=currentCat?`Browsing ${currentCat}${currentSub?" · "+currentSub:""}`:"Choose a category to explore your saved content";
 }
-function openCategory(c){currentCat=c;currentSub="";currentView="subcategories";setNav("categories");renderAll()}
+function openCategory(c){currentCat=c;currentSub="";currentView="categoryDetail";setNav("categories");renderAll()}
 function filtered(){let q=$("#search").value.trim().toLowerCase();let catKey=(currentCat||"").trim().toLowerCase(),subKey=(currentSub||"").trim().toLowerCase();let a=items.filter(i=>currentView==="favorites"?i.favorite:true).filter(i=>!catKey||String(i.category||"").trim().toLowerCase()===catKey).filter(i=>!subKey||String(i.subcategory||"").trim().toLowerCase()===subKey);if(q)a=a.filter(i=>[i.title,i.url,i.notes,i.category,i.subcategory,i.platform].join(" ").toLowerCase().includes(q));const sort=$("#sortSelect").value;if(sort==="newest")a.sort((x,y)=>y.created-x.created);if(sort==="oldest")a.sort((x,y)=>x.created-y.created);if(sort==="az")a.sort((x,y)=>(x.title||"").localeCompare(y.title||""));if(sort==="favorite")a.sort((x,y)=>Number(y.favorite)-Number(x.favorite)||y.created-x.created);return a}
 function card(i){return `<article class="card"><div class="card-top"><span class="platform ${i.platform.toLowerCase()}">${i.platform==="Instagram"?"◎":i.platform==="YouTube"?"▶":"↗"} ${i.platform}</span><button class="fav ${i.favorite?"is-fav":""}" title="Favorite" data-fav="${i.id}">${i.favorite?"♥":"♡"}</button></div><h3>${esc(i.title||"Saved link")}</h3><div class="url">${esc(domain(i.url))} · ${fmt(i.created)}</div>${i.notes?`<div class="note">${esc(i.notes)}</div>`:""}<div class="meta"><span class="category-pill">${iconForCategory(i.category)} ${esc(i.category)}${i.subcategory?` · ${esc(i.subcategory)}`:""}</span><div class="actions"><button class="small-btn" data-open="${i.id}">Play / Open</button><button class="small-btn" data-edit="${i.id}">Edit</button><button class="small-btn delete-btn" data-delete="${i.id}">Delete</button></div></div></article>`}
 function render(){
   renderStats();
   const section=document.querySelector('.category-section');
+  document.getElementById("app")?.classList.toggle("home-view", currentView==="all" && !currentCat);
   if(currentView==="categories"||currentView==="subcategories"){
     section?.classList.remove('hidden');
     categoriesView();
     return;
   }
+  if(currentView==="categoryDetail"){ renderCategoryDetail(); return; }
   if(currentCat){section?.classList.add('hidden');}
   else section?.classList.remove('hidden');
   renderCategories();
@@ -333,7 +336,7 @@ function render(){
   const inContext=Boolean(currentCat||currentSub);
   let topicHero=document.getElementById("topicHero");
   if(!topicHero){topicHero=document.createElement("div");topicHero.id="topicHero";topicHero.className="topic-hero hidden";const itemsEl=document.getElementById("items");itemsEl.parentNode.insertBefore(topicHero,itemsEl);}
-  if(currentSub){const image=imageForTopic(currentCat,currentSub);topicHero.className="topic-hero";topicHero.style.backgroundImage=`linear-gradient(0deg,rgba(2,13,25,.96),rgba(2,13,25,.08) 85%),url("${image}")`;topicHero.innerHTML=`<button class="topic-hero-back" id="topicHeroBack">‹ ${esc(currentCat)}</button><div class="topic-hero-copy"><div class="topic-hero-kicker">SAVED COLLECTION</div><h2>${esc(currentSub)}</h2><p>${esc(currentCat)} · curated videos and links</p><span class="topic-hero-count">${filtered().length} saved items</span></div>`;document.getElementById("topicHeroBack").onclick=()=>{currentSub="";currentView="subcategories";renderAll();};}
+  if(currentSub){const image=imageForTopic(currentCat,currentSub);topicHero.className="topic-hero";topicHero.style.backgroundImage=`linear-gradient(0deg,rgba(2,13,25,.96),rgba(2,13,25,.08) 85%),url("${image}")`;topicHero.innerHTML=`<button class="topic-hero-back" id="topicHeroBack">‹ ${esc(currentCat)}</button><div class="topic-hero-copy"><div class="topic-hero-kicker">SAVED COLLECTION</div><h2>${esc(currentSub)}</h2><p>${esc(currentCat)} · curated videos and links</p><span class="topic-hero-count">${filtered().length} saved items</span></div>`;document.getElementById("topicHeroBack").onclick=()=>{currentSub="";currentView="categoryDetail";renderAll();};}
   else {topicHero.className="topic-hero hidden";topicHero.style.backgroundImage="none";topicHero.innerHTML="";}
   if($("#libraryCount")) $("#libraryCount").textContent=`${a.length} saved ${a.length===1?"item":"items"}`;
   $("#recentKicker").textContent=inContext?"SAVED CONTENT":"LATEST";
@@ -341,8 +344,43 @@ function render(){
   $("#recentSubtitle").textContent=inContext?`${currentCat}${currentSub?` · ${currentSub}`:""} · every saved video in this topic`:`${a.length} saved items`;
   $("#viewCategories").textContent=inContext?"‹ Back to topics":"View all →";
   $("#items").innerHTML=a.slice(0,currentView==="all"&&!currentCat&&!$("#search").value?6:a.length).map(card).join("");$("#empty").classList.toggle("hidden",a.length!==0);if(!a.length){$("#emptyTitle").textContent=items.length?"Nothing found here":"Your SaveNest is waiting";$("#emptyText").textContent=items.length?"Try another category, subcategory or search word.":"Save your first Instagram or YouTube video and organize it into a category."}$$("#items [data-fav]").forEach(b=>b.onclick=()=>{const i=items.find(x=>x.id===b.dataset.fav);if(!i)return;i.favorite=!i.favorite;save();render()});$$("#items [data-open]").forEach(b=>b.onclick=()=>openSavedItem(b.dataset.open));$$("#items [data-edit]").forEach(b=>b.onclick=()=>editItem(b.dataset.edit));$$("#items [data-delete]").forEach(b=>b.onclick=()=>deleteItem(b.dataset.delete));$("#clearSearch").classList.toggle("hidden",!$("#search").value)}
+function renderCategoryDetail(){
+  const section=document.querySelector('.category-section'); section?.classList.remove('hidden');
+  const sectionTitle=document.querySelector('.category-section .section-title'); if(sectionTitle)sectionTitle.textContent=currentCat;
+  const subs=subcats[currentCat]||['Other'];
+  const count=items.filter(i=>String(i.category||'').toLowerCase()===currentCat.toLowerCase()).length;
+  const heroImage=categoryHeroImage(currentCat);
+  const grid=document.getElementById('categoryGrid');
+  grid.innerHTML=`<button class="category-back" id="detailBack">‹ Back to categories</button><div class="category-detail-hero" style="background-image:linear-gradient(0deg,rgba(2,13,25,.96),rgba(2,13,25,.12) 90%),url('${heroImage}')"><div class="category-hero-copy"><div class="section-kicker">SAVED COLLECTION</div><h2>${esc(currentCat)}</h2><p>Explore your interests · Keep what inspires you</p><span class="topic-hero-count">${count} videos</span></div></div><div class="section-head topic-list-head"><div><div class="section-title">Explore Topics</div><div class="section-count">Choose a topic to see its saved videos</div></div></div><div class="topic-card-list">${subs.map((sub)=>`<button class="category-card large theme-${themeForSubcategory(currentCat,sub)}" data-subcategory="${esc(sub)}" style="background-image:linear-gradient(90deg,rgba(2,15,29,.9),rgba(2,15,29,.2)),url('${imageForTopic(currentCat,sub)}')"><span class="category-icon">${iconForCategory(currentCat)}</span><span class="category-name">${esc(sub)}</span><span class="category-count">${items.filter(i=>i.category===currentCat&&i.subcategory===sub).length} saved</span><span class="category-arrow">→</span></button>`).join('')}</div>`;
+  document.getElementById('detailBack').onclick=()=>{currentCat='';currentSub='';currentView='categories';renderAll()};
+  grid.querySelectorAll('[data-subcategory]').forEach(b=>b.onclick=()=>{currentSub=b.dataset.subcategory;currentView='all';renderAll();window.scrollTo({top:0,behavior:'smooth'})});
+  const recent=items.filter(i=>String(i.category||'').toLowerCase()===currentCat.toLowerCase()).sort((a,b)=>b.created-a.created);
+  document.getElementById('items').innerHTML=recent.map(card).join('');
+  document.getElementById('empty').classList.toggle('hidden',recent.length!==0);
+  document.querySelectorAll('#items [data-fav]').forEach(b=>b.onclick=()=>{const i=items.find(x=>x.id===b.dataset.fav);if(i){i.favorite=!i.favorite;save();renderAll()}});
+  document.querySelectorAll('#items [data-open]').forEach(b=>b.onclick=()=>openSavedItem(b.dataset.open));
+  document.querySelectorAll('#items [data-edit]').forEach(b=>b.onclick=()=>editItem(b.dataset.edit));
+  document.querySelectorAll('#items [data-delete]').forEach(b=>b.onclick=()=>deleteItem(b.dataset.delete));
+  document.getElementById('recentKicker').textContent='MOST RECENT';document.getElementById('recentTitle').textContent=currentCat;document.getElementById('recentSubtitle').textContent=`${count} saved videos in ${currentCat}`;
+  document.getElementById('viewCategories').textContent='‹ Back to categories';document.getElementById('viewCategories').onclick=()=>{currentCat='';currentSub='';currentView='categories';renderAll()};
+  if(document.getElementById('libraryCount'))document.getElementById('libraryCount').textContent=`${count} videos · ${subs.length} topics`;
+  document.getElementById('categorySubtitle').textContent=currentCat;
+}
+function categoryHeroImage(name){
+ const n=String(name||'').toLowerCase();
+ if(n.includes('motivat'))return 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=88';
+ if(n.includes('health'))return 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1400&q=88';
+ if(n.includes('study')||n.includes('education')||n.includes('nebosh'))return 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1400&q=88';
+ if(n.includes('music'))return 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1400&q=88';
+ if(n.includes('travel'))return 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=88';
+ if(n.includes('baby')||n.includes('family'))return 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1400&q=88';
+ if(n.includes('quote'))return 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1400&q=88';
+ if(n.includes('work'))return 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1400&q=88';
+ return 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1400&q=88';
+}
 function categoriesView(){
   const counts={};items.forEach(i=>{const k=String(i.category||"").trim().toLowerCase();counts[k]=(counts[k]||0)+1});
+  const sectionTitle=document.querySelector('.category-section .section-title'); if(sectionTitle)sectionTitle.textContent=currentView==="subcategories"?currentCat:"Categories";
   if(currentView==="subcategories"){
     const subs=subcats[currentCat]||["Other"];
     const subCounts={};items.filter(i=>String(i.category||"").trim().toLowerCase()===currentCat.trim().toLowerCase()).forEach(i=>{const k=String(i.subcategory||"Other").trim();subCounts[k]=(subCounts[k]||0)+1});
@@ -474,7 +512,7 @@ function normalizeLibrary(){
 function ensureLegacyItems(){items=items.map(i=>{let category=i.category||smartCategory(i.sourceTitle||i.title||"",i.sourceText||i.notes||"",i.url||"");const combined=(i.sourceTitle||" ")+" "+(i.sourceText||" ")+" "+(i.title||"")+" "+(i.notes||"");if(category==="Other"&&combined.trim())category=smartCategory(i.sourceTitle||i.title||"",i.sourceText||i.notes||"",i.url||"");const subcategory=i.subcategory&&((subcats[category]||[]).includes(i.subcategory))?i.subcategory:smartSubcategory(category,i.sourceTitle||i.title||"",i.sourceText||i.notes||"",i.url||"");const title=i.title||cleanTitle(i.sourceTitle||"",category,subcategory,i.sourceText||i.notes||"",i.url||"");const notes=i.notes||smartReminder(title,category,subcategory,i.sourceText||"");return {...i,category,subcategory,title,notes}})}
 
 $("#addBtn").onclick=addItem;$("#navAdd").onclick=addItem;$("#emptyAdd").onclick=addItem;$("#itemForm").onsubmit=submitItem;
-$("#viewCategories").onclick=()=>{if(currentCat&&currentSub){currentView="subcategories";currentSub="";setNav("categories");renderAll();return}if(currentCat){currentView="subcategories";currentSub="";setNav("categories");renderAll();return}currentView="categories";currentCat="";currentSub="";setNav("categories");renderAll()};
+$("#viewCategories").onclick=()=>{if(currentCat&&currentSub){currentView="categoryDetail";currentSub="";setNav("categories");renderAll();return}if(currentCat){currentView="categories";currentCat="";currentSub="";setNav("categories");renderAll();return}currentView="categories";currentCat="";currentSub="";setNav("categories");renderAll()};
 $("#url").oninput=async()=>{categoryManuallySet=false;subcategoryManuallySet=false;const p=platform($("#url").value);$("#platformHint").textContent=$("#url").value?`Detected platform: ${p}`:"Paste a link to detect the platform.";if($("#url").value){if(p==="YouTube"){const t=await fetchYouTubeTitle($("#url").value);if(t&&!$("#sharedTitle").value)$("#sharedTitle").value=t}await autoFillSmart({force:true})}};
 $("#category").onchange=()=>{categoryManuallySet=true;subcategoryManuallySet=false;fillSubcats($("#category").value);$("#smartStatus").textContent=`✏️ Category selected: ${$("#category").value}. SaveNest will keep it.`};
 $("#sharedTitle").oninput=()=>{if($("#url").value){categoryManuallySet=false;autoFillSmart({force:true})}};$("#sourceText").oninput=()=>{if($("#url").value){categoryManuallySet=false;autoFillSmart({force:true})}};$("#subcategory").onchange=()=>{subcategoryManuallySet=true};
